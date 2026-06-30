@@ -62,46 +62,98 @@ class CircuitCfg:
     country: str
     year: int
     gp: str
+    short: str  # abbreviated name for compact UI (no "Circuit"/"International"/etc.)
     seed: bool = False
     session: str = "Q"
 
 
 CIRCUITS: dict[str, CircuitCfg] = {
     # --- seed (real data shipped now) ---
-    "monaco":      CircuitCfg("Circuit de Monaco", "Monaco", 2024, "Monaco", seed=True),
-    "silverstone": CircuitCfg("Silverstone Circuit", "Great Britain", 2023, "Great Britain", seed=True),
-    "monza":       CircuitCfg("Autodromo Nazionale Monza", "Italy", 2023, "Italy", seed=True),
-    "spa":         CircuitCfg("Circuit de Spa-Francorchamps", "Belgium", 2024, "Belgium", seed=True),
-    "suzuka":      CircuitCfg("Suzuka International Racing Course", "Japan", 2024, "Japan", seed=True),
+    "monaco":      CircuitCfg("Circuit de Monaco", "Monaco", 2024, "Monaco", "Monaco", seed=True),
+    "silverstone": CircuitCfg("Silverstone Circuit", "Great Britain", 2023, "Great Britain", "Silverstone", seed=True),
+    "monza":       CircuitCfg("Autodromo Nazionale Monza", "Italy", 2023, "Italy", "Monza", seed=True),
+    "spa":         CircuitCfg("Circuit de Spa-Francorchamps", "Belgium", 2024, "Belgium", "Spa-Francorchamps", seed=True),
+    "suzuka":      CircuitCfg("Suzuka International Racing Course", "Japan", 2024, "Japan", "Suzuka", seed=True),
     # --- modern recurring roster (run with --all when ready) ---
-    "bahrain":     CircuitCfg("Bahrain International Circuit", "Bahrain", 2024, "Bahrain"),
-    "jeddah":      CircuitCfg("Jeddah Corniche Circuit", "Saudi Arabia", 2024, "Saudi Arabia"),
-    "albert_park": CircuitCfg("Albert Park Circuit", "Australia", 2024, "Australia"),
-    "imola":       CircuitCfg("Autodromo Enzo e Dino Ferrari", "Emilia-Romagna", 2024, "Emilia Romagna"),
-    "miami":       CircuitCfg("Miami International Autodrome", "Miami", 2024, "Miami"),
-    "catalunya":   CircuitCfg("Circuit de Barcelona-Catalunya", "Spain", 2024, "Spain"),
-    "montreal":    CircuitCfg("Circuit Gilles Villeneuve", "Canada", 2024, "Canada"),
-    "red_bull_ring": CircuitCfg("Red Bull Ring", "Austria", 2024, "Austria"),
-    "hungaroring": CircuitCfg("Hungaroring", "Hungary", 2024, "Hungary"),
-    "zandvoort":   CircuitCfg("Circuit Zandvoort", "Netherlands", 2024, "Netherlands"),
-    "baku":        CircuitCfg("Baku City Circuit", "Azerbaijan", 2024, "Azerbaijan"),
-    "marina_bay":  CircuitCfg("Marina Bay Street Circuit", "Singapore", 2024, "Singapore"),
-    "cota":        CircuitCfg("Circuit of the Americas", "United States", 2024, "United States"),
-    "rodriguez":   CircuitCfg("Autodromo Hermanos Rodriguez", "Mexico", 2024, "Mexico City"),
-    "interlagos":  CircuitCfg("Autodromo Jose Carlos Pace", "Brazil", 2024, "Sao Paulo"),
-    "vegas":       CircuitCfg("Las Vegas Strip Circuit", "Las Vegas", 2024, "Las Vegas"),
-    "lusail":      CircuitCfg("Lusail International Circuit", "Qatar", 2024, "Qatar"),
-    "yas_marina":  CircuitCfg("Yas Marina Circuit", "Abu Dhabi", 2024, "Abu Dhabi"),
-    "shanghai":    CircuitCfg("Shanghai International Circuit", "China", 2024, "China"),
+    "bahrain":     CircuitCfg("Bahrain International Circuit", "Bahrain", 2024, "Bahrain", "Bahrain"),
+    "jeddah":      CircuitCfg("Jeddah Corniche Circuit", "Saudi Arabia", 2024, "Saudi Arabia", "Jeddah"),
+    "albert_park": CircuitCfg("Albert Park Circuit", "Australia", 2024, "Australia", "Albert Park"),
+    "imola":       CircuitCfg("Autodromo Enzo e Dino Ferrari", "Emilia-Romagna", 2024, "Emilia Romagna", "Imola"),
+    "miami":       CircuitCfg("Miami International Autodrome", "Miami", 2024, "Miami", "Miami"),
+    "catalunya":   CircuitCfg("Circuit de Barcelona-Catalunya", "Spain", 2024, "Spain", "Barcelona"),
+    "montreal":    CircuitCfg("Circuit Gilles Villeneuve", "Canada", 2024, "Canada", "Montreal"),
+    "red_bull_ring": CircuitCfg("Red Bull Ring", "Austria", 2024, "Austria", "Red Bull Ring"),
+    "hungaroring": CircuitCfg("Hungaroring", "Hungary", 2024, "Hungary", "Hungaroring"),
+    "zandvoort":   CircuitCfg("Circuit Zandvoort", "Netherlands", 2024, "Netherlands", "Zandvoort"),
+    "baku":        CircuitCfg("Baku City Circuit", "Azerbaijan", 2024, "Azerbaijan", "Baku"),
+    "marina_bay":  CircuitCfg("Marina Bay Street Circuit", "Singapore", 2024, "Singapore", "Marina Bay"),
+    "cota":        CircuitCfg("Circuit of the Americas", "United States", 2024, "United States", "COTA"),
+    "rodriguez":   CircuitCfg("Autodromo Hermanos Rodriguez", "Mexico", 2024, "Mexico City", "Mexico City"),
+    "interlagos":  CircuitCfg("Autodromo Jose Carlos Pace", "Brazil", 2024, "Sao Paulo", "Interlagos"),
+    "vegas":       CircuitCfg("Las Vegas Strip Circuit", "Las Vegas", 2024, "Las Vegas", "Las Vegas"),
+    "lusail":      CircuitCfg("Lusail International Circuit", "Qatar", 2024, "Qatar", "Lusail"),
+    "yas_marina":  CircuitCfg("Yas Marina Circuit", "Abu Dhabi", 2024, "Abu Dhabi", "Yas Marina"),
+    "shanghai":    CircuitCfg("Shanghai International Circuit", "China", 2024, "China", "Shanghai"),
 }
 
-# Optional flavour: (circuit id, corner number) -> real corner name.
-# NOTE: left empty on purpose. FastF1's corner numbering does not always line up
-# with the "official" turn numbers fans use (e.g. it can mark Spoon/130R on the
-# wrong index), and a mislabelled corner is worse than none for this audience.
-# Verify the numbering per circuit (cross-check the printed sample against a track
-# map) before adding entries here — the rest of the pipeline already supports it.
-CORNER_NAMES: dict[tuple[str, int], str] = {}
+# Flavour: (circuit id, FastF1 corner number) -> real corner name.
+# Mapped from each session's telemetry signature (slowest = hairpin, flat-out
+# high-speed = the famous fast corners, etc.) cross-checked against track maps.
+# Only confident, well-known corners are named; the rest stay as "T<n>". Verify
+# the numbering against the printed sample if you add a new circuit.
+CORNER_NAMES: dict[tuple[str, int], str] = {
+    # Monaco
+    ("monaco", 1): "Sainte Devote",
+    ("monaco", 3): "Massenet",
+    ("monaco", 4): "Casino",
+    ("monaco", 5): "Mirabeau",
+    ("monaco", 6): "Grand Hotel Hairpin",
+    ("monaco", 8): "Portier",
+    ("monaco", 9): "Tunnel",
+    ("monaco", 10): "Nouvelle Chicane",
+    ("monaco", 12): "Tabac",
+    ("monaco", 13): "Swimming Pool",
+    ("monaco", 18): "La Rascasse",
+    ("monaco", 19): "Anthony Noghes",
+    # Silverstone
+    ("silverstone", 1): "Abbey",
+    ("silverstone", 3): "Village",
+    ("silverstone", 4): "The Loop",
+    ("silverstone", 6): "Brooklands",
+    ("silverstone", 7): "Luffield",
+    ("silverstone", 9): "Copse",
+    ("silverstone", 10): "Maggotts",
+    ("silverstone", 11): "Becketts",
+    ("silverstone", 15): "Stowe",
+    ("silverstone", 16): "Vale",
+    ("silverstone", 18): "Club",
+    # Monza
+    ("monza", 1): "Variante del Rettifilo",
+    ("monza", 3): "Curva Grande",
+    ("monza", 4): "Variante della Roggia",
+    ("monza", 6): "Lesmo 1",
+    ("monza", 7): "Lesmo 2",
+    ("monza", 8): "Variante Ascari",
+    ("monza", 11): "Parabolica",
+    # Spa
+    ("spa", 1): "La Source",
+    ("spa", 3): "Eau Rouge",
+    ("spa", 4): "Raidillon",
+    ("spa", 5): "Les Combes",
+    ("spa", 11): "Pouhon",
+    ("spa", 16): "Blanchimont",
+    ("spa", 18): "Bus Stop Chicane",
+    ("spa", 19): "Bus Stop Chicane",
+    # Suzuka
+    ("suzuka", 8): "Dunlop Curve",
+    ("suzuka", 9): "Degner 1",
+    ("suzuka", 10): "Degner 2",
+    ("suzuka", 11): "Hairpin",
+    ("suzuka", 13): "Spoon Curve",
+    ("suzuka", 15): "130R",
+    ("suzuka", 16): "Casio Triangle",
+    ("suzuka", 17): "Casio Triangle",
+}
 
 # ----------------------------------------------------------------------------
 # Tunables
@@ -368,6 +420,7 @@ def main() -> int:
         {
             "id": cid,
             "name": CIRCUITS[cid].name,
+            "short": CIRCUITS[cid].short,
             "country": CIRCUITS[cid].country,
             "corners": len(corners_by_circuit[cid]),
         }

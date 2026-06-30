@@ -66,8 +66,15 @@
 }
 
 .optTurn {
-    font-size: 0.68rem;
+    font-size: 0.72rem;
+    color: var(--bone);
+}
+
+.optCode {
+    font-size: 0.6rem;
     color: var(--bone-dim);
+    opacity: 0.6;
+    letter-spacing: 0.04em;
 }
 
 .optTag {

@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { Corner, Difficulty } from "../../types/corner";
 import type { GuessResult } from "../../lib/compare";
 import { buildShare, copyToClipboard } from "../../lib/share";
-import { circuitName } from "../../game/data";
+import { circuitShort } from "../../game/data";
 import { cx } from "../../lib/cx";
 import { Button } from "../Button/Button";
 import styles from "./ResultShare.module.css";
@@ -42,14 +42,17 @@ export function ResultShare({
     <div className={cx(styles.box, won ? styles.won : styles.lost)}>
       <div className={styles.headline}>{won ? "✓ Nailed it" : "✗ Out of laps"}</div>
       <p className={styles.reveal}>
-        It was <b>{circuitName(answer.circuitId)}</b> — Turn {answer.number}
-        {answer.name ? ` (${answer.name})` : ""}.
+        It was <b>{circuitShort(answer.circuitId)}</b> —{" "}
+        {answer.name ?? `Turn ${answer.number}`}
+        {answer.name ? ` (T${answer.number})` : ""}.
       </p>
       <div className={styles.facts}>
         <span>{answer.minSpeed} km/h min</span>
         <span>{answer.brakingDistance} m braking</span>
-        <span>{answer.cornerAngle}° {answer.direction === "L" ? "left" : "right"}</span>
-        <span>{answer.lateralG}g</span>
+        <span>
+          {answer.cornerAngle}° {answer.direction === "L" ? "left" : "right"}
+        </span>
+        <span>gear {answer.minGear}</span>
       </div>
 
       <div className={styles.actions}>

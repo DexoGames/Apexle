@@ -2,30 +2,35 @@
   {
     "id": "monaco",
     "name": "Circuit de Monaco",
+    "short": "Monaco",
     "country": "Monaco",
     "corners": 19
   },
   {
     "id": "monza",
     "name": "Autodromo Nazionale Monza",
+    "short": "Monza",
     "country": "Italy",
     "corners": 11
   },
   {
     "id": "silverstone",
     "name": "Silverstone Circuit",
+    "short": "Silverstone",
     "country": "Great Britain",
     "corners": 18
   },
   {
     "id": "spa",
     "name": "Circuit de Spa-Francorchamps",
+    "short": "Spa-Francorchamps",
     "country": "Belgium",
     "corners": 19
   },
   {
     "id": "suzuka",
     "name": "Suzuka International Racing Course",
+    "short": "Suzuka",
     "country": "Japan",
     "corners": 18
   }

@@ -34,6 +34,8 @@ export interface Corner {
 export interface Circuit {
   id: string;
   name: string;
+  /** abbreviated name for compact UI (dropdown, grid) */
+  short: string;
   country: string;
   corners: number;
 }
@@ -49,37 +51,34 @@ export interface DifficultyConfig {
   guesses: number;
   /** which telemetry channels are drawn in the trace */
   channels: TraceChannel[];
-  /** win on matching just the circuit (true) or the exact corner (false) */
-  circuitOnly: boolean;
-  /** show the "same circuit" hint on each guess */
+  /** show the "same circuit" hint (green edge) on each guess */
   showCircuitHint: boolean;
 }
 
 export type TraceChannel = "speed" | "throttle" | "brake";
 
+// Every mode requires the exact corner to win. Difficulty changes how much you're
+// shown (channels), how forgiving the matches are, and how many guesses you get.
 export const DIFFICULTY_CONFIG: Record<Difficulty, DifficultyConfig> = {
   rookie: {
     label: "Rookie",
-    blurb: "Name the circuit — any corner on it counts. Full inputs, generous matches.",
+    blurb: "Full inputs shown, generous tolerances, same-circuit hints, 6 guesses.",
     guesses: 6,
     channels: ["speed", "throttle", "brake"],
-    circuitOnly: true,
     showCircuitHint: true,
   },
   pro: {
     label: "Pro",
-    blurb: "Pin the exact corner. Speed & brake trace.",
+    blurb: "Speed & brake trace, standard tolerances, 6 guesses.",
     guesses: 6,
     channels: ["speed", "brake"],
-    circuitOnly: false,
     showCircuitHint: true,
   },
   legend: {
     label: "Legend",
-    blurb: "Exact corner. Speed trace only, tight tolerances, 4 guesses.",
+    blurb: "Speed trace only, tight tolerances, no circuit hint, 4 guesses.",
     guesses: 4,
     channels: ["speed"],
-    circuitOnly: false,
     showCircuitHint: false,
   },
 };

@@ -1,5 +1,4 @@
 import type { Corner, Difficulty } from "../types/corner";
-import { DIFFICULTY_CONFIG } from "../types/corner";
 import { enabledAttributes, type ComparableKey } from "../game/attributes";
 
 export type CellStatus = "exact" | "close" | "far";
@@ -69,9 +68,8 @@ export function compareGuess(
   });
 
   const sameCircuit = guess.circuitId === answer.circuitId;
-  const correct = DIFFICULTY_CONFIG[difficulty].circuitOnly
-    ? sameCircuit
-    : guess.id === answer.id;
+  // Win only on the exact corner, in every difficulty.
+  const correct = guess.id === answer.id;
 
   return { corner: guess, correct, sameCircuit, cells };
 }

@@ -1,7 +1,7 @@
 import { Fragment } from "react";
 import { enabledAttributes } from "../../game/attributes";
 import type { Arrow, GuessResult } from "../../lib/compare";
-import { circuitName } from "../../game/data";
+import { circuitShort, cornerPrimary, cornerCode } from "../../game/data";
 import { cx } from "../../lib/cx";
 import styles from "./ComparisonGrid.module.css";
 
@@ -43,8 +43,13 @@ export function ComparisonGrid({ results, maxGuesses, showCircuitHint }: Props) 
                 showCircuitHint && r.sameCircuit && styles.sameCircuit,
               )}
             >
-              <span className={styles.cName}>{circuitName(r.corner.circuitId)}</span>
-              <span className={styles.cTurn}>T{r.corner.number}</span>
+              <span className={styles.cName}>{circuitShort(r.corner.circuitId)}</span>
+              <span className={styles.cTurn}>
+                {cornerPrimary(r.corner)}
+                {cornerCode(r.corner) && (
+                  <small className={styles.cCode}>{cornerCode(r.corner)}</small>
+                )}
+              </span>
             </div>
             {r.cells.map((c) => (
               <div key={c.key} className={cx(styles.cell, styles[c.status])}>

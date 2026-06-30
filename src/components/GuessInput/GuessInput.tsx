@@ -21,10 +21,7 @@ export function GuessInput({ onGuess, guessedIds, disabled }: Props) {
   const matches = useMemo(() => {
     const s = q.trim().toLowerCase();
     if (!s) return [];
-    return CORNER_OPTIONS.filter((o) => o.label.toLowerCase().includes(s)).slice(
-      0,
-      MAX_RESULTS,
-    );
+    return CORNER_OPTIONS.filter((o) => o.search.includes(s)).slice(0, MAX_RESULTS);
   }, [q]);
 
   const choose = (o: CornerOption) => {
@@ -84,11 +81,9 @@ export function GuessInput({ onGuess, guessedIds, disabled }: Props) {
                   onClick={() => choose(o)}
                   disabled={used}
                 >
-                  <span className={styles.optCircuit}>{o.circuitName}</span>
-                  <span className={styles.optTurn}>
-                    T{o.number}
-                    {o.name ? ` · ${o.name}` : ""}
-                  </span>
+                  <span className={styles.optCircuit}>{o.circuitShort}</span>
+                  <span className={styles.optTurn}>{o.primary}</span>
+                  {o.code && <span className={styles.optCode}>{o.code}</span>}
                   {used && <span className={styles.optTag}>guessed</span>}
                 </button>
               </li>

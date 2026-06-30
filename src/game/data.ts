@@ -19,24 +19,50 @@ export function circuitName(id: string): string {
   return circuitMap.get(id)?.name ?? id;
 }
 
+/** Abbreviated circuit name for compact UI (dropdown, grid). */
+export function circuitShort(id: string): string {
+  const c = circuitMap.get(id);
+  return c?.short || c?.name || id;
+}
+
+/** A corner's display label: its name if it has one, else "T<n>". */
+export function cornerPrimary(corner: { name: string | null; number: number }): string {
+  return corner.name ?? `T${corner.number}`;
+}
+
+/** The subtle turn code shown beside a named corner (null when unnamed). */
+export function cornerCode(corner: { name: string | null; number: number }): string | null {
+  return corner.name ? `T${corner.number}` : null;
+}
+
 export interface CornerOption {
   id: string;
-  label: string;
   circuitId: string;
-  circuitName: string;
+  circuitShort: string;
   number: number;
   name: string | null;
+  primary: string;
+  code: string | null;
+  /** lowercased haystack for the search box (full + short names, corner name, T#) */
+  search: string;
 }
 
 /** Flat, pre-labelled list backing the guess search box. */
-export const CORNER_OPTIONS: CornerOption[] = CORNERS.map((c) => ({
-  id: c.id,
-  circuitId: c.circuitId,
-  number: c.number,
-  name: c.name,
-  circuitName: circuitName(c.circuitId),
-  label: `${circuitName(c.circuitId)} — T${c.number}${c.name ? ` ${c.name}` : ""}`,
-})).sort((a, b) => a.label.localeCompare(b.label));
+export const CORNER_OPTIONS: CornerOption[] = CORNERS.map((c) => {
+  const short = circuitShort(c.circuitId);
+  return {
+    id: c.id,
+    circuitId: c.circuitId,
+    circuitShort: short,
+    number: c.number,
+    name: c.name,
+    primary: cornerPrimary(c),
+    code: cornerCode(c),
+    search: `${circuitName(c.circuitId)} ${short} ${c.name ?? ""} t${c.number}`.toLowerCase(),
+  };
+}).sort((a, b) =>
+  a.circuitShort.localeCompare(b.circuitShort) || a.number - b.number,
+);
 
 export const HAS_DATA = CORNERS.length > 0;
 

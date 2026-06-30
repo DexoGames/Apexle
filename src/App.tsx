@@ -94,7 +94,6 @@ export function App() {
           {playing && (
             <div className={styles.remaining}>
               {game.remaining} {game.remaining === 1 ? "guess" : "guesses"} left
-              {cfg.circuitOnly && <span className={styles.hintTag}>name the circuit</span>}
             </div>
           )}
         </div>

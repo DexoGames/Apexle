@@ -112,7 +112,7 @@ export const ATTRIBUTES: AttributeDef[] = [
     short: "Lat G",
     unit: "g",
     type: "numeric",
-    enabled: true,
+    enabled: false,
     exactWithin: 0.4,
     closeWithin: 1,
     difficultyScale: { rookie: 1.6, legend: 0.6 },
@@ -131,7 +131,7 @@ export const ATTRIBUTES: AttributeDef[] = [
     label: "DRS on approach",
     short: "DRS",
     type: "categorical",
-    enabled: true,
+    enabled: false,
     format: (v) => (v ? "DRS" : "NO DRS"),
   },
   // --- shipped off by default; flip enabled:true to add them ---
