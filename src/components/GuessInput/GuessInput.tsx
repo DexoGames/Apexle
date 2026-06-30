@@ -19,9 +19,12 @@ export function GuessInput({ onGuess, guessedIds, disabled }: Props) {
   const guessed = useMemo(() => new Set(guessedIds), [guessedIds]);
 
   const matches = useMemo(() => {
-    const s = q.trim().toLowerCase();
-    if (!s) return [];
-    return CORNER_OPTIONS.filter((o) => o.search.includes(s)).slice(0, MAX_RESULTS);
+    const tokens = q.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    if (!tokens.length) return [];
+    return CORNER_OPTIONS.filter((o) => tokens.every((t) => o.search.includes(t))).slice(
+      0,
+      MAX_RESULTS,
+    );
   }, [q]);
 
   const choose = (o: CornerOption) => {

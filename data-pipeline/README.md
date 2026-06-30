@@ -41,6 +41,19 @@ qualifying** session for a clean representative fastest lap:
 Pick dry sessions — a wet qualifying lap distorts every speed/braking figure. Famous
 corners can be given names in `CORNER_NAMES`.
 
+## Well-known corners (daily weighting)
+
+Each corner gets a `notable` flag. The daily puzzle draws from notable corners ~75% of
+the time (the weighting + the 500-day repeat cycle live in `src/game/data.ts`). Control
+which corners are notable in `extract.py`:
+
+- **`FULLY_NOTABLE`** — circuit ids where *every* corner counts (the legendary tracks).
+- **`NOTABLE_CORNERS`** — `{circuit_id: {turn numbers}}` for the famous corners elsewhere.
+- Any **named** corner is automatically notable, and the pipeline guarantees **at least 2
+  notable corners per circuit** (falling back to the slowest + fastest if you list none).
+
+The run prints `N corners (M notable)` per circuit so you can sanity-check coverage.
+
 ## Tuning / validation
 
 After a run the script prints a sanity table. Eyeball it against reality:

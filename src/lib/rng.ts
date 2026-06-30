@@ -31,13 +31,14 @@ export function seededRandom(seed: string): () => number {
   return mulberry32(xmur3(seed)());
 }
 
-const EPOCH_UTC = Date.UTC(2024, 0, 1);
+// Launch day = puzzle #1. (Year, monthIndex, day) — month is 0-based, so 5 = June.
+const EPOCH_UTC = Date.UTC(2026, 5, 30);
 
 export function utcMidnight(date = new Date()): number {
   return Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
 }
 
-/** Stable, ascending daily puzzle number (UTC days since 2024-01-01). */
+/** Stable, ascending daily puzzle number (#1 on launch day). */
 export function puzzleNumber(date = new Date()): number {
   return Math.floor((utcMidnight(date) - EPOCH_UTC) / 86400000) + 1;
 }

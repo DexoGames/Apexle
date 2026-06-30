@@ -155,6 +155,34 @@ CORNER_NAMES: dict[tuple[str, int], str] = {
     ("suzuka", 17): "Casio Triangle",
 }
 
+# Legendary circuits: every corner counts as "well known".
+FULLY_NOTABLE: set[str] = {"monaco", "spa", "suzuka", "monza", "silverstone", "interlagos"}
+
+# Well-known corners on the remaining circuits, by (official) turn number. FastF1
+# uses official numbering, so these line up. Any named corner is also treated as
+# notable, and the pipeline guarantees at least 2 notable corners per circuit by
+# falling back to the most distinctive ones (slowest + fastest) if needed.
+NOTABLE_CORNERS: dict[str, set[int]] = {
+    "bahrain": {1, 4, 10, 13},
+    "jeddah": {1, 13, 22, 27},
+    "albert_park": {1, 3, 9, 11},
+    "imola": {2, 4, 7, 9, 14},
+    "miami": {1, 11, 17},
+    "catalunya": {1, 3, 9, 10},
+    "montreal": {1, 8, 10, 13},
+    "red_bull_ring": {1, 3, 4, 9},
+    "hungaroring": {1, 2, 4, 11},
+    "zandvoort": {3, 7, 14},
+    "baku": {1, 3, 8, 15},
+    "marina_bay": {1, 5, 7, 14},
+    "cota": {1, 11, 16, 19},
+    "rodriguez": {1, 4, 12, 16},
+    "vegas": {1, 5, 12, 14},
+    "lusail": {1, 6, 10, 16},
+    "yas_marina": {1, 5, 9, 16},
+    "shanghai": {1, 6, 13, 14},
+}
+
 # ----------------------------------------------------------------------------
 # Tunables
 # ----------------------------------------------------------------------------
@@ -226,6 +254,24 @@ def _sector_boundaries(lap, tel: pd.DataFrame) -> tuple[float, float]:
 
 def _sector_of(apex_d: float, d1: float, d2: float) -> int:
     return 1 if apex_d <= d1 else (2 if apex_d <= d2 else 3)
+
+
+def _assign_notable(circuit_id: str, corners: list[Corner]) -> None:
+    """Flag the well-known corners (weighted up in the daily pick)."""
+    if circuit_id in FULLY_NOTABLE:
+        for c in corners:
+            c.notable = True
+        return
+    nums = NOTABLE_CORNERS.get(circuit_id, set())
+    for c in corners:
+        if c.name or c.number in nums:
+            c.notable = True
+    # guarantee at least two notable corners: fall back to the most distinctive
+    if corners and sum(c.notable for c in corners) < 2:
+        slowest = min(corners, key=lambda c: c.minSpeed)
+        fastest = max(corners, key=lambda c: c.entrySpeed)
+        slowest.notable = True
+        fastest.notable = True
 
 
 def _corner_angle_dir(x: np.ndarray, y: np.ndarray, d: np.ndarray,
@@ -409,7 +455,8 @@ def process_circuit(circuit_id: str, cfg: CircuitCfg) -> list[Corner]:
         c = extract_corner(circuit_id, int(row["Number"]), float(row["Distance"]), tel, lap_len, sec)
         if c is not None:
             out.append(c)
-    log.info("   %d corners", len(out))
+    _assign_notable(circuit_id, out)
+    log.info("   %d corners (%d notable)", len(out), sum(c.notable for c in out))
     return out
 
 

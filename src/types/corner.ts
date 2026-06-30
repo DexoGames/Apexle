@@ -30,6 +30,7 @@ export interface Corner {
   lateralG: number; // peak g
   drsApproach: boolean;
   duration: number; // s
+  notable: boolean; // a "well-known" corner — weighted up in the daily pick
 }
 
 export interface Circuit {

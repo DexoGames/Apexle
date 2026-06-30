@@ -1,5 +1,89 @@
 [
   {
+    "id": "albert_park",
+    "name": "Albert Park Circuit",
+    "short": "Albert Park",
+    "country": "Australia",
+    "corners": 14
+  },
+  {
+    "id": "bahrain",
+    "name": "Bahrain International Circuit",
+    "short": "Bahrain",
+    "country": "Bahrain",
+    "corners": 15
+  },
+  {
+    "id": "baku",
+    "name": "Baku City Circuit",
+    "short": "Baku",
+    "country": "Azerbaijan",
+    "corners": 20
+  },
+  {
+    "id": "catalunya",
+    "name": "Circuit de Barcelona-Catalunya",
+    "short": "Barcelona",
+    "country": "Spain",
+    "corners": 14
+  },
+  {
+    "id": "cota",
+    "name": "Circuit of the Americas",
+    "short": "COTA",
+    "country": "United States",
+    "corners": 20
+  },
+  {
+    "id": "hungaroring",
+    "name": "Hungaroring",
+    "short": "Hungaroring",
+    "country": "Hungary",
+    "corners": 16
+  },
+  {
+    "id": "imola",
+    "name": "Autodromo Enzo e Dino Ferrari",
+    "short": "Imola",
+    "country": "Emilia-Romagna",
+    "corners": 19
+  },
+  {
+    "id": "interlagos",
+    "name": "Autodromo Jose Carlos Pace",
+    "short": "Interlagos",
+    "country": "Brazil",
+    "corners": 15
+  },
+  {
+    "id": "jeddah",
+    "name": "Jeddah Corniche Circuit",
+    "short": "Jeddah",
+    "country": "Saudi Arabia",
+    "corners": 27
+  },
+  {
+    "id": "lusail",
+    "name": "Lusail International Circuit",
+    "short": "Lusail",
+    "country": "Qatar",
+    "corners": 16
+  },
+  {
+    "id": "marina_bay",
+    "name": "Marina Bay Street Circuit",
+    "short": "Marina Bay",
+    "country": "Singapore",
+    "corners": 19
+  },
+  {
+    "id": "miami",
+    "name": "Miami International Autodrome",
+    "short": "Miami",
+    "country": "Miami",
+    "corners": 19
+  },
+  {
     "id": "monaco",
     "name": "Circuit de Monaco",
     "short": "Monaco",
@@ -7,11 +91,39 @@
     "corners": 19
   },
   {
+    "id": "montreal",
+    "name": "Circuit Gilles Villeneuve",
+    "short": "Montreal",
+    "country": "Canada",
+    "corners": 14
+  },
+  {
     "id": "monza",
     "name": "Autodromo Nazionale Monza",
     "short": "Monza",
     "country": "Italy",
     "corners": 11
+  },
+  {
+    "id": "red_bull_ring",
+    "name": "Red Bull Ring",
+    "short": "Red Bull Ring",
+    "country": "Austria",
+    "corners": 10
+  },
+  {
+    "id": "rodriguez",
+    "name": "Autodromo Hermanos Rodriguez",
+    "short": "Mexico City",
+    "country": "Mexico",
+    "corners": 17
+  },
+  {
+    "id": "shanghai",
+    "name": "Shanghai International Circuit",
+    "short": "Shanghai",
+    "country": "China",
+    "corners": 16
   },
   {
     "id": "silverstone",
@@ -33,5 +145,26 @@
     "short": "Suzuka",
     "country": "Japan",
     "corners": 18
+  },
+  {
+    "id": "vegas",
+    "name": "Las Vegas Strip Circuit",
+    "short": "Las Vegas",
+    "country": "Las Vegas",
+    "corners": 17
+  },
+  {
+    "id": "yas_marina",
+    "name": "Yas Marina Circuit",
+    "short": "Yas Marina",
+    "country": "Abu Dhabi",
+    "corners": 16
+  },
+  {
+    "id": "zandvoort",
+    "name": "Circuit Zandvoort",
+    "short": "Zandvoort",
+    "country": "Netherlands",
+    "corners": 14
   }
 ]

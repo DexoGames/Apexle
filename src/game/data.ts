@@ -1,7 +1,7 @@
 import cornersJson from "../data/corners.json";
 import circuitsJson from "../data/circuits.json";
 import type { Circuit, Corner, Difficulty } from "../types/corner";
-import { seededRandom, ymd } from "../lib/rng";
+import { seededRandom, puzzleNumber } from "../lib/rng";
 
 export const CORNERS = cornersJson as unknown as Corner[];
 export const CIRCUITS = circuitsJson as unknown as Circuit[];
@@ -66,10 +66,58 @@ export const CORNER_OPTIONS: CornerOption[] = CORNERS.map((c) => {
 
 export const HAS_DATA = CORNERS.length > 0;
 
+// --- daily selection --------------------------------------------------------
+// A fixed, deterministic 500-day sequence per difficulty. ~75% of days draw from
+// the "well-known" (notable) corners, the rest from the others. Everyone sees the
+// same corner each day (no server), and the whole pattern repeats every 500 days.
+const DAILY_CYCLE = 500;
+const NOTABLE_BIAS = 0.75;
+
+function shuffle<T>(arr: T[], rng: () => number): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+const sequences = new Map<Difficulty, Corner[]>();
+
+function dailySequence(difficulty: Difficulty): Corner[] {
+  const cached = sequences.get(difficulty);
+  if (cached) return cached;
+
+  const rng = seededRandom(`apexle-daily-v1|${difficulty}`);
+  const notable = shuffle(CORNERS.filter((c) => c.notable), rng);
+  const others = shuffle(CORNERS.filter((c) => !c.notable), rng);
+
+  const seq: Corner[] = [];
+  let ni = 0;
+  let oi = 0;
+  for (let i = 0; i < DAILY_CYCLE; i++) {
+    // draw from the notable pool ~NOTABLE_BIAS of the time (cycling each shuffled
+    // pool so corners don't repeat until the pool is exhausted)
+    const pickNotable =
+      notable.length > 0 && (others.length === 0 || rng() < NOTABLE_BIAS);
+    if (pickNotable) {
+      seq.push(notable[ni % notable.length]);
+      ni++;
+    } else {
+      seq.push(others[oi % others.length]);
+      oi++;
+    }
+  }
+  sequences.set(difficulty, seq);
+  return seq;
+}
+
 /** The deterministic daily corner for a difficulty (same for everyone, no server). */
 export function dailyCorner(difficulty: Difficulty, date = new Date()): Corner {
-  const rng = seededRandom(`${ymd(date)}|${difficulty}`);
-  return CORNERS[Math.floor(rng() * CORNERS.length)];
+  const seq = dailySequence(difficulty);
+  const n = seq.length;
+  const idx = (((puzzleNumber(date) - 1) % n) + n) % n;
+  return seq[idx];
 }
 
 export function randomCorner(excludeId?: string): Corner {
