@@ -40,7 +40,7 @@ export function ResultShare({
 
   return (
     <div className={cx(styles.box, won ? styles.won : styles.lost)}>
-      <div className={styles.headline}>{won ? "✓ Nailed it" : "✗ Out of laps"}</div>
+      <div className={styles.headline}>{won ? "Nailed it!" : "Out of laps"}</div>
       <p className={styles.reveal}>
         It was <b>{circuitShort(answer.circuitId)}</b> —{" "}
         {answer.name ?? `Turn ${answer.number}`}

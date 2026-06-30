@@ -77,6 +77,15 @@ export const ATTRIBUTES: AttributeDef[] = [
     closeWithin: 30,    format: (v) => `${v}°`,
   },
   {
+    key: "minGear",
+    label: "Minimum gear",
+    short: "Gear",
+    type: "numeric",
+    enabled: true,
+    exactWithin: 0,
+    closeWithin: 1,    format: (v) => `${v}`,
+  },
+  {
     key: "gradient",
     label: "Gradient (approx.)",
     short: "Gradient",
@@ -85,15 +94,6 @@ export const ATTRIBUTES: AttributeDef[] = [
     enabled: true,
     exactWithin: 1,
     closeWithin: 3,    format: (v) => `${sign(Number(v))}${v}%`,
-  },
-  {
-    key: "minGear",
-    label: "Minimum gear",
-    short: "Gear",
-    type: "numeric",
-    enabled: true,
-    exactWithin: 0,
-    closeWithin: 1,    format: (v) => `${v}`,
   },
   {
     key: "lateralG",
