@@ -1,4 +1,4 @@
-import type { Corner, Difficulty } from "../types/corner";
+import type { Corner } from "../types/corner";
 
 /**
  * THE ATTRIBUTE REGISTRY — single source of truth.
@@ -34,12 +34,11 @@ export interface AttributeDef {
   type: AttrType;
   /** THE SWITCH — flip to false to drop this attribute everywhere. */
   enabled: boolean;
-  /** numeric: |answer − guess| ≤ this ⇒ green (exact-ish) */
+  /** numeric: |answer − guess| ≤ this ⇒ green (exact-ish). Scaled by the
+   *  difficulty's `tolerance` (see DIFFICULTY_CONFIG in types/corner.ts). */
   exactWithin?: number;
-  /** numeric: |answer − guess| ≤ this ⇒ yellow (close) */
+  /** numeric: |answer − guess| ≤ this ⇒ yellow (close). Also tolerance-scaled. */
   closeWithin?: number;
-  /** optional per-difficulty multiplier on the thresholds (looser/tighter) */
-  difficultyScale?: Partial<Record<Difficulty, number>>;
   /** display formatter for a cell value */
   format: (v: number | string | boolean) => string;
 }
@@ -55,9 +54,7 @@ export const ATTRIBUTES: AttributeDef[] = [
     type: "numeric",
     enabled: true,
     exactWithin: 8,
-    closeWithin: 25,
-    difficultyScale: { rookie: 1.6, legend: 0.6 },
-    format: (v) => `${v} km/h`,
+    closeWithin: 25,    format: (v) => `${v} km/h`,
   },
   {
     key: "brakingDistance",
@@ -67,9 +64,7 @@ export const ATTRIBUTES: AttributeDef[] = [
     type: "numeric",
     enabled: true,
     exactWithin: 15,
-    closeWithin: 50,
-    difficultyScale: { rookie: 1.6, legend: 0.6 },
-    format: (v) => `${v} m`,
+    closeWithin: 50,    format: (v) => `${v} m`,
   },
   {
     key: "cornerAngle",
@@ -79,9 +74,7 @@ export const ATTRIBUTES: AttributeDef[] = [
     type: "numeric",
     enabled: true,
     exactWithin: 10,
-    closeWithin: 30,
-    difficultyScale: { rookie: 1.6, legend: 0.6 },
-    format: (v) => `${v}°`,
+    closeWithin: 30,    format: (v) => `${v}°`,
   },
   {
     key: "gradient",
@@ -91,9 +84,7 @@ export const ATTRIBUTES: AttributeDef[] = [
     type: "numeric",
     enabled: true,
     exactWithin: 1,
-    closeWithin: 3,
-    difficultyScale: { rookie: 1.6, legend: 0.6 },
-    format: (v) => `${sign(Number(v))}${v}%`,
+    closeWithin: 3,    format: (v) => `${sign(Number(v))}${v}%`,
   },
   {
     key: "minGear",
@@ -102,9 +93,7 @@ export const ATTRIBUTES: AttributeDef[] = [
     type: "numeric",
     enabled: true,
     exactWithin: 0,
-    closeWithin: 1,
-    difficultyScale: { rookie: 1.6, legend: 0.6 },
-    format: (v) => `${v}`,
+    closeWithin: 1,    format: (v) => `${v}`,
   },
   {
     key: "lateralG",
@@ -114,9 +103,7 @@ export const ATTRIBUTES: AttributeDef[] = [
     type: "numeric",
     enabled: false,
     exactWithin: 0.4,
-    closeWithin: 1,
-    difficultyScale: { rookie: 1.6, legend: 0.6 },
-    format: (v) => `${v}g`,
+    closeWithin: 1,    format: (v) => `${v}g`,
   },
   {
     key: "direction",
@@ -143,9 +130,7 @@ export const ATTRIBUTES: AttributeDef[] = [
     type: "numeric",
     enabled: false,
     exactWithin: 10,
-    closeWithin: 30,
-    difficultyScale: { rookie: 1.6, legend: 0.6 },
-    format: (v) => `${v} km/h`,
+    closeWithin: 30,    format: (v) => `${v} km/h`,
   },
   {
     key: "duration",
@@ -155,9 +140,7 @@ export const ATTRIBUTES: AttributeDef[] = [
     type: "numeric",
     enabled: false,
     exactWithin: 0.4,
-    closeWithin: 1.2,
-    difficultyScale: { rookie: 1.6, legend: 0.6 },
-    format: (v) => `${v}s`,
+    closeWithin: 1.2,    format: (v) => `${v}s`,
   },
 ];
 

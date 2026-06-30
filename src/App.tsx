@@ -123,7 +123,21 @@ export function App() {
 
       {showHowTo && <HowToPlayModal onClose={closeHowTo} />}
       {showStats && (
-        <StatsModal difficulty={game.difficulty} onClose={() => setShowStats(false)} />
+        <StatsModal
+          difficulty={game.difficulty}
+          onClose={() => setShowStats(false)}
+          result={
+            game.status !== "playing"
+              ? {
+                  status: game.status === "won" ? "won" : "lost",
+                  answer: game.answer,
+                  results: game.results,
+                  puzzleNumber: game.puzzleNumber,
+                  isDaily: game.isDaily,
+                }
+              : undefined
+          }
+        />
       )}
     </>
   );

@@ -1,4 +1,5 @@
 import type { Corner, Difficulty } from "../types/corner";
+import { DIFFICULTY_CONFIG } from "../types/corner";
 import { enabledAttributes, type ComparableKey } from "../game/attributes";
 
 export type CellStatus = "exact" | "close" | "far";
@@ -47,7 +48,7 @@ export function compareGuess(
     const gv = Number(g);
     const av = Number(a);
     const diff = Math.abs(av - gv);
-    const scale = def.difficultyScale?.[difficulty] ?? 1;
+    const scale = DIFFICULTY_CONFIG[difficulty].tolerance;
     const exact = (def.exactWithin ?? 0) * scale;
     const close = (def.closeWithin ?? 0) * scale;
 
