@@ -1,0 +1,32 @@
+[
+  {
+    "id": "monaco",
+    "name": "Circuit de Monaco",
+    "country": "Monaco",
+    "corners": 19
+  },
+  {
+    "id": "monza",
+    "name": "Autodromo Nazionale Monza",
+    "country": "Italy",
+    "corners": 11
+  },
+  {
+    "id": "silverstone",
+    "name": "Silverstone Circuit",
+    "country": "Great Britain",
+    "corners": 18
+  },
+  {
+    "id": "spa",
+    "name": "Circuit de Spa-Francorchamps",
+    "country": "Belgium",
+    "corners": 19
+  },
+  {
+    "id": "suzuka",
+    "name": "Suzuka International Racing Course",
+    "country": "Japan",
+    "corners": 18
+  }
+]

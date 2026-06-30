@@ -1,0 +1,73 @@
+.box {
+    margin-top: 18px;
+    padding: 18px;
+    background: var(--black-soft);
+    border: 2px solid var(--line-strong);
+    border-top-width: 4px;
+    text-align: center;
+}
+
+.won {
+    border-top-color: var(--fb-exact);
+}
+
+.lost {
+    border-top-color: #e23b3b;
+}
+
+.headline {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    margin-bottom: 8px;
+}
+
+.won .headline {
+    color: var(--fb-exact);
+}
+
+.lost .headline {
+    color: #e23b3b;
+}
+
+.reveal {
+    font-size: 0.92rem;
+    margin-bottom: 12px;
+}
+
+.reveal b {
+    color: var(--orange);
+}
+
+.facts {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+
+.facts span {
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--bone-dim);
+    background: var(--black-soft-2);
+    padding: 4px 8px;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.practiceNote {
+    margin-top: 12px;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--bone-dim);
+}

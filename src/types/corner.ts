@@ -48,27 +48,29 @@ export interface DifficultyConfig {
   /** max guesses */
   guesses: number;
   /** which telemetry channels are drawn in the trace */
-  channels: Array<"speed" | "throttle" | "brake" | "gear">;
+  channels: TraceChannel[];
   /** win on matching just the circuit (true) or the exact corner (false) */
   circuitOnly: boolean;
   /** show the "same circuit" hint on each guess */
   showCircuitHint: boolean;
 }
 
+export type TraceChannel = "speed" | "throttle" | "brake";
+
 export const DIFFICULTY_CONFIG: Record<Difficulty, DifficultyConfig> = {
   rookie: {
     label: "Rookie",
-    blurb: "Name the circuit. Full telemetry, generous matches.",
+    blurb: "Name the circuit — any corner on it counts. Full inputs, generous matches.",
     guesses: 6,
-    channels: ["speed", "throttle", "brake", "gear"],
+    channels: ["speed", "throttle", "brake"],
     circuitOnly: true,
     showCircuitHint: true,
   },
   pro: {
     label: "Pro",
-    blurb: "Pin the exact corner. Speed, throttle & brake.",
+    blurb: "Pin the exact corner. Speed & brake trace.",
     guesses: 6,
-    channels: ["speed", "throttle", "brake"],
+    channels: ["speed", "brake"],
     circuitOnly: false,
     showCircuitHint: true,
   },

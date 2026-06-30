@@ -95,34 +95,20 @@ CIRCUITS: dict[str, CircuitCfg] = {
     "shanghai":    CircuitCfg("Shanghai International Circuit", "China", 2024, "China"),
 }
 
-# A few iconic corners get real names (id, corner number) -> name. Optional flavour.
-CORNER_NAMES: dict[tuple[str, int], str] = {
-    ("monaco", 1): "Sainte Devote",
-    ("monaco", 6): "Loews Hairpin",
-    ("monaco", 12): "Tabac",
-    ("monaco", 18): "La Rascasse",
-    ("silverstone", 9): "Copse",
-    ("silverstone", 13): "Stowe",
-    ("silverstone", 15): "Club",
-    ("monza", 1): "Prima Variante",
-    ("monza", 4): "Variante della Roggia",
-    ("monza", 11): "Parabolica",
-    ("spa", 1): "La Source",
-    ("spa", 3): "Eau Rouge",
-    ("spa", 4): "Raidillon",
-    ("spa", 8): "Pouhon",
-    ("spa", 19): "Bus Stop",
-    ("suzuka", 1): "First Curve",
-    ("suzuka", 9): "Degner 1",
-    ("suzuka", 15): "Spoon",
-    ("suzuka", 16): "130R",
-}
+# Optional flavour: (circuit id, corner number) -> real corner name.
+# NOTE: left empty on purpose. FastF1's corner numbering does not always line up
+# with the "official" turn numbers fans use (e.g. it can mark Spoon/130R on the
+# wrong index), and a mislabelled corner is worse than none for this audience.
+# Verify the numbering per circuit (cross-check the printed sample against a track
+# map) before adding entries here — the rest of the pipeline already supports it.
+CORNER_NAMES: dict[tuple[str, int], str] = {}
 
 # ----------------------------------------------------------------------------
 # Tunables
 # ----------------------------------------------------------------------------
-WIN_BEFORE = 350.0   # metres before the apex to include in the window
-WIN_AFTER = 160.0    # metres after the apex
+WIN_BEFORE = 300.0   # metres before the apex to include in the window
+WIN_AFTER = 140.0    # metres after the apex
+RADIUS_DD = 18.0     # metres each side of apex for the 3-point radius (lateral G)
 APEX_SEARCH = 90.0   # search radius (m) around the nominal apex for true min speed
 TRACE_POINTS = 80    # downsampled points in the display trace
 DRS_ON = {10, 12, 14}  # FastF1 DRS channel codes that mean "open"
@@ -158,40 +144,76 @@ def _moving_avg(a: np.ndarray, k: int) -> np.ndarray:
     return np.convolve(a, kernel, mode="same")
 
 
-def _heading_change_deg(x: np.ndarray, y: np.ndarray) -> tuple[float, str]:
-    """Total turn angle (deg) and direction across the slice, via tangent rotation."""
-    xs = _moving_avg(x, 5)
-    ys = _moving_avg(y, 5)
-    dx = np.gradient(xs)
-    dy = np.gradient(ys)
-    headings = np.unwrap(np.arctan2(dy, dx))
-    net = headings[-1] - headings[0]
-    angle = abs(np.degrees(net))
-    # net > 0 == counter-clockwise == left turn in standard math orientation
-    direction = "L" if net > 0 else "R"
+def _nearest(d: np.ndarray, target: float) -> int:
+    return int(np.argmin(np.abs(d - target)))
+
+
+def _corner_angle_dir(x: np.ndarray, y: np.ndarray, d: np.ndarray,
+                      apex_d: float) -> tuple[float, str]:
+    """Net turn angle (deg) + direction over the corner's own extent.
+
+    The path is first resampled to a uniform 2 m spacing so the heading derivative
+    is smooth (raw telemetry samples are unevenly spaced and spike the curvature).
+    A contiguous run is then grown out from the apex while the turn rate stays
+    above a fraction of its peak AND keeps the same sign — isolating one corner
+    from its neighbours (vital at packed circuits like Monaco). The swept angle is
+    the unwrapped heading change across that run: ~180 for a hairpin, ~20 for a
+    kink, with a stable sign through a 180° reversal.
+    """
+    d0 = d - d[0]
+    if d0[-1] < 8:
+        return 0.0, "R"
+    grid = np.arange(0.0, d0[-1], 2.0)
+    if grid.size < 6:
+        return 0.0, "R"
+    rx = np.interp(grid, d0, x)
+    ry = np.interp(grid, d0, y)
+    theta = np.unwrap(np.arctan2(np.gradient(ry), np.gradient(rx)))
+    tr = np.gradient(theta)  # rad per 2 m step
+
+    a = int(np.clip(np.argmin(np.abs(grid - (apex_d - d[0]))), 1, tr.size - 2))
+    lo_w, hi_w = max(0, a - 6), min(tr.size, a + 7)
+    a = lo_w + int(np.argmax(np.abs(tr[lo_w:hi_w])))
+    peak = abs(tr[a])
+    if peak < 1e-6:
+        return 0.0, "R"
+
+    thr = peak * 0.2
+    sgn = np.sign(tr[a])
+    lo = hi = a
+    while lo - 1 >= 0 and abs(tr[lo - 1]) >= thr and np.sign(tr[lo - 1]) == sgn:
+        lo -= 1
+    while hi + 1 < tr.size and abs(tr[hi + 1]) >= thr and np.sign(tr[hi + 1]) == sgn:
+        hi += 1
+
+    signed = float(theta[hi] - theta[lo])
+    direction = "L" if signed > 0 else "R"
     if FLIP_DIRECTION:
         direction = "R" if direction == "L" else "L"
-    return angle, direction
+    return abs(np.degrees(signed)), direction
 
 
-def _peak_lateral_g(x: np.ndarray, y: np.ndarray, speed_kmh: np.ndarray) -> float:
-    """Peak lateral g from curvature (a = v^2 * kappa)."""
-    xs = _moving_avg(x, 7)
-    ys = _moving_avg(y, 7)
-    dx = np.gradient(xs)
-    dy = np.gradient(ys)
-    ddx = np.gradient(dx)
-    ddy = np.gradient(dy)
-    denom = (dx * dx + dy * dy) ** 1.5
-    denom[denom == 0] = np.nan
-    kappa = np.abs(dx * ddy - dy * ddx) / denom  # 1/m
-    v = speed_kmh / 3.6  # m/s
-    lat = (v * v) * kappa / 9.81  # in g
-    lat = lat[np.isfinite(lat)]
-    if lat.size == 0:
+def _circumradius(p1, p2, p3) -> float:
+    """Radius (m) of the circle through three points; inf if near-collinear."""
+    a = float(np.hypot(p2[0] - p3[0], p2[1] - p3[1]))
+    b = float(np.hypot(p1[0] - p3[0], p1[1] - p3[1]))
+    c = float(np.hypot(p1[0] - p2[0], p1[1] - p2[1]))
+    area2 = abs((p2[0] - p1[0]) * (p3[1] - p1[1]) - (p2[1] - p1[1]) * (p3[0] - p1[0]))
+    if area2 < 1e-6:
+        return float("inf")
+    return a * b * c / (2.0 * area2)
+
+
+def _lateral_g(x: np.ndarray, y: np.ndarray, d: np.ndarray, apex_d: float,
+               v_apex_kmh: float) -> float:
+    """Peak lateral g ≈ v² / R at the apex, R from a 3-point circle fit."""
+    i1, i2, i3 = (_nearest(d, apex_d - RADIUS_DD), _nearest(d, apex_d),
+                  _nearest(d, apex_d + RADIUS_DD))
+    r = _circumradius((x[i1], y[i1]), (x[i2], y[i2]), (x[i3], y[i3]))
+    if not np.isfinite(r) or r <= 0:
         return 0.0
-    # clip wild numerical spikes at the segment ends
-    return float(np.clip(np.nanpercentile(lat, 97), 0, 7.0))
+    v = v_apex_kmh / 3.6  # m/s
+    return float(np.clip(v * v / r / 9.81, 0, 5.5))
 
 
 def extract_corner(circuit_id: str, cid_num: int, apex_d: float, tel: pd.DataFrame,
@@ -242,8 +264,8 @@ def extract_corner(circuit_id: str, cid_num: int, apex_d: float, tel: pd.DataFra
     span = d[-1] - d[0]
     gradient = float((zs[-1] - zs[0]) / span * 100.0) if span > 0 else 0.0
 
-    angle, direction = _heading_change_deg(x, y)
-    lateral_g = _peak_lateral_g(x, y, speed)
+    angle, direction = _corner_angle_dir(x, y, d, apex_dist)
+    lateral_g = _lateral_g(x, y, d, apex_dist, min_speed)
 
     drs_approach = bool(np.isin(drs[approach], list(DRS_ON)).any())
 

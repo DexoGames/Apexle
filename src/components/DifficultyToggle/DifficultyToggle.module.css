@@ -1,0 +1,36 @@
+.group {
+    display: inline-flex;
+    border: 2px solid var(--line-strong);
+}
+
+.btn {
+    padding: 8px 14px;
+    background: transparent;
+    color: var(--bone-dim);
+    border: none;
+    border-right: 2px solid var(--line-strong);
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.btn:last-child {
+    border-right: none;
+}
+
+.btn:hover {
+    color: var(--bone);
+}
+
+.active {
+    background: var(--orange);
+    color: var(--orange-ink);
+}
+
+.active:hover {
+    color: var(--orange-ink);
+}

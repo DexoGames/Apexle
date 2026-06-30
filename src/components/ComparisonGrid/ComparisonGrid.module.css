@@ -1,0 +1,97 @@
+.scroll {
+    overflow-x: auto;
+    margin-top: 18px;
+    /* faint edge so it's clear the grid scrolls horizontally on small screens */
+    -webkit-overflow-scrolling: touch;
+}
+
+.grid {
+    display: grid;
+    gap: 4px;
+    min-width: 540px;
+}
+
+.head {
+    padding: 6px 4px;
+    font-size: 0.56rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--bone-dim);
+    text-align: center;
+    align-self: end;
+}
+
+.cornerHead {
+    text-align: left;
+    padding-left: 8px;
+}
+
+.cornerCell {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    padding: 6px 8px;
+    min-height: 52px;
+    background: var(--black-soft-2);
+    border-left: 3px solid transparent;
+}
+
+.sameCircuit {
+    border-left-color: var(--fb-exact);
+}
+
+.cName {
+    font-size: 0.62rem;
+    line-height: 1.15;
+    color: var(--bone);
+}
+
+.cTurn {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--orange);
+}
+
+.cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    min-height: 52px;
+    padding: 4px 2px;
+    text-align: center;
+}
+
+.val {
+    font-size: 0.66rem;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.arrow {
+    font-size: 0.62rem;
+    line-height: 1;
+}
+
+.exact {
+    background: var(--fb-exact);
+    color: var(--fb-exact-ink);
+}
+
+.close {
+    background: var(--fb-close);
+    color: var(--fb-close-ink);
+}
+
+.far {
+    background: var(--fb-far);
+    color: var(--fb-far-ink);
+}
+
+.empty {
+    background: transparent;
+    border: 1px dashed var(--line-on-black);
+    min-height: 52px;
+}

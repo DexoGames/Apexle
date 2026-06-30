@@ -1,0 +1,86 @@
+.wrap {
+    background: var(--black-soft);
+    border: 2px solid var(--line-strong);
+    padding: 14px 14px 8px;
+}
+
+.legend {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 8px;
+}
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--bone-dim);
+}
+
+.chip i {
+    width: 12px;
+    height: 4px;
+    display: inline-block;
+}
+
+.swSpeed {
+    background: var(--orange);
+}
+
+.swThrottle {
+    background: var(--fb-exact);
+}
+
+.swBrake {
+    background: #e23b3b;
+}
+
+.svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.grid {
+    stroke: var(--line-on-black);
+    stroke-width: 1;
+}
+
+.baseline {
+    stroke: var(--line-strong);
+    stroke-width: 1;
+}
+
+.speed {
+    fill: none;
+    stroke: var(--orange);
+    stroke-width: 3;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 4px rgba(255, 90, 54, 0.45));
+}
+
+.throttle {
+    fill: rgba(47, 224, 137, 0.30);
+    stroke: var(--fb-exact);
+    stroke-width: 1.5;
+}
+
+.brake {
+    fill: rgba(226, 59, 59, 0.32);
+}
+
+.cap,
+.capRight {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    fill: var(--bone-dim);
+}
+
+.capRight {
+    text-anchor: end;
+}

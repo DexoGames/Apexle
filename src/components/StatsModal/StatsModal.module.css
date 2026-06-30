@@ -1,0 +1,81 @@
+.row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 22px;
+}
+
+.stat {
+    text-align: center;
+}
+
+.statN {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--bone);
+}
+
+.statL {
+    margin-top: 4px;
+    font-size: 0.56rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--bone-dim);
+}
+
+.h {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--bone-dim);
+    margin-bottom: 10px;
+}
+
+.dist {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.distRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.distN {
+    width: 12px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--bone-dim);
+}
+
+.barTrack {
+    flex: 1;
+}
+
+.bar {
+    background: var(--orange);
+    color: var(--orange-ink);
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-align: right;
+    padding: 3px 6px;
+    min-width: 1px;
+}
+
+.empty {
+    font-size: 0.78rem;
+    color: var(--bone-dim);
+}
+
+.note {
+    margin-top: 18px;
+    font-size: 0.6rem;
+    color: var(--bone-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
