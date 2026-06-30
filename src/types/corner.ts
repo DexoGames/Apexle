@@ -26,6 +26,7 @@ export interface Corner {
   minGear: number;
   gradient: number; // signed % (approximate)
   direction: "L" | "R";
+  sector: number; // 1, 2 or 3
   lateralG: number; // peak g
   drsApproach: boolean;
   duration: number; // s

@@ -5,6 +5,8 @@ import styles from "./TelemetryChart.module.css";
 interface Props {
   trace: TracePoint[];
   channels: TraceChannel[];
+  /** corner direction — shown as a given (the trace can't reveal it) */
+  direction: "L" | "R";
 }
 
 // viewBox geometry
@@ -22,7 +24,7 @@ const INP_BOT = 280;
  * numbers, no track shape — just the telemetry signature. Hand-rolled SVG to
  * match the brutalist, dependency-light house style.
  */
-export function TelemetryChart({ trace, channels }: Props) {
+export function TelemetryChart({ trace, channels, direction }: Props) {
   const geom = useMemo(() => {
     const maxD = trace[trace.length - 1]?.d || 1;
     const speeds = trace.map((p) => p.speed);
@@ -77,6 +79,9 @@ export function TelemetryChart({ trace, channels }: Props) {
             <i className={styles.swBrake} /> Brake
           </span>
         )}
+        <span className={styles.dir} title="Corner direction">
+          {direction === "L" ? "◀ Left Turn" : "Right Turn ▶"}
+        </span>
       </div>
 
       <svg

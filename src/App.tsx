@@ -83,7 +83,11 @@ export function App() {
           </button>
         </div>
 
-        <TelemetryChart trace={game.answer.trace} channels={cfg.channels} />
+        <TelemetryChart
+          trace={game.answer.trace}
+          channels={cfg.channels}
+          direction={game.answer.direction}
+        />
 
         <div className={styles.guessArea}>
           <GuessInput

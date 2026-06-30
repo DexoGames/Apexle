@@ -184,9 +184,11 @@ class Corner:
     minGear: int
     gradient: float
     direction: str       # 'L' | 'R'
+    sector: int          # 1, 2 or 3
     lateralG: float
     drsApproach: bool
     duration: float
+    notable: bool = False  # a "well-known" corner — weighted up in the daily pick
 
 
 def _moving_avg(a: np.ndarray, k: int) -> np.ndarray:
@@ -198,6 +200,32 @@ def _moving_avg(a: np.ndarray, k: int) -> np.ndarray:
 
 def _nearest(d: np.ndarray, target: float) -> int:
     return int(np.argmin(np.abs(d - target)))
+
+
+def _sector_boundaries(lap, tel: pd.DataFrame) -> tuple[float, float]:
+    """Distance (m) of the two timing-sector boundaries on this lap.
+
+    Maps the lap's sector durations onto the telemetry's distance axis. Falls
+    back to even thirds if the sector times are missing.
+    """
+    dist = tel["Distance"].to_numpy()
+    lap_len = float(dist[-1])
+    try:
+        s1, s2 = lap["Sector1Time"], lap["Sector2Time"]
+        if pd.isna(s1) or pd.isna(s2):
+            raise ValueError
+        t = (tel["Time"] - tel["Time"].iloc[0]).dt.total_seconds().to_numpy()
+        d1 = float(np.interp(s1.total_seconds(), t, dist))
+        d2 = float(np.interp(s1.total_seconds() + s2.total_seconds(), t, dist))
+        if not (0 < d1 < d2 < lap_len):
+            raise ValueError
+        return d1, d2
+    except Exception:
+        return lap_len / 3.0, 2.0 * lap_len / 3.0
+
+
+def _sector_of(apex_d: float, d1: float, d2: float) -> int:
+    return 1 if apex_d <= d1 else (2 if apex_d <= d2 else 3)
 
 
 def _corner_angle_dir(x: np.ndarray, y: np.ndarray, d: np.ndarray,
@@ -269,7 +297,7 @@ def _lateral_g(x: np.ndarray, y: np.ndarray, d: np.ndarray, apex_d: float,
 
 
 def extract_corner(circuit_id: str, cid_num: int, apex_d: float, tel: pd.DataFrame,
-                   lap_len: float) -> Corner | None:
+                   lap_len: float, sec: tuple[float, float]) -> Corner | None:
     dist = tel["Distance"].to_numpy()
     lo, hi = apex_d - WIN_BEFORE, apex_d + WIN_AFTER
     mask = (dist >= lo) & (dist <= hi)
@@ -320,6 +348,7 @@ def extract_corner(circuit_id: str, cid_num: int, apex_d: float, tel: pd.DataFra
     lateral_g = _lateral_g(x, y, d, apex_dist, min_speed)
 
     drs_approach = bool(np.isin(drs[approach], list(DRS_ON)).any())
+    sector = _sector_of(apex_dist, sec[0], sec[1])
 
     # --- duration: braking point (or window start) through to window exit ---
     start_i = pre[0] if pre.size else 0
@@ -351,6 +380,7 @@ def extract_corner(circuit_id: str, cid_num: int, apex_d: float, tel: pd.DataFra
         minGear=min_gear,
         gradient=round(gradient, 1),
         direction=direction,
+        sector=sector,
         lateralG=round(lateral_g, 1),
         drsApproach=drs_approach,
         duration=round(duration, 1),
@@ -372,10 +402,11 @@ def process_circuit(circuit_id: str, cfg: CircuitCfg) -> list[Corner]:
     circuit_info = session.get_circuit_info()
     corners_df = circuit_info.corners
     lap_len = float(tel["Distance"].max())
+    sec = _sector_boundaries(lap, tel)
 
     out: list[Corner] = []
     for _, row in corners_df.iterrows():
-        c = extract_corner(circuit_id, int(row["Number"]), float(row["Distance"]), tel, lap_len)
+        c = extract_corner(circuit_id, int(row["Number"]), float(row["Distance"]), tel, lap_len, sec)
         if c is not None:
             out.append(c)
     log.info("   %d corners", len(out))
@@ -440,8 +471,8 @@ def main() -> int:
         log.info("\n  sample (validate these against reality):")
         for c in all_corners[:8]:
             log.info(
-                "  %-14s min=%3dkm/h brake=%3dm angle=%3d° gear=%d grad=%+.1f%% %s latG=%.1f drs=%s",
-                c["id"], c["minSpeed"], c["brakingDistance"], c["cornerAngle"],
+                "  %-14s S%d min=%3dkm/h brake=%3dm angle=%3d° gear=%d grad=%+.1f%% %s latG=%.1f drs=%s",
+                c["id"], c["sector"], c["minSpeed"], c["brakingDistance"], c["cornerAngle"],
                 c["minGear"], c["gradient"], c["direction"], c["lateralG"], c["drsApproach"],
             )
     return 0

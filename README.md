@@ -77,6 +77,6 @@ to GitHub Pages. `public/CNAME` pins the custom domain.
 
 ## Credits & licensing
 
-Unofficial fan project — not affiliated with Formula 1, the FIA, or any team. Telemetry
+Unofficial fan project. Not affiliated with Formula 1, the FIA, or any team. Telemetry
 accessed via FastF1 for personal, non-commercial use; only derived, anonymised values are
 shipped. Fonts (Archivo Black, JetBrains Mono) are self-hosted under the SIL OFL.

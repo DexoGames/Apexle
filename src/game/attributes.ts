@@ -21,6 +21,7 @@ export type ComparableKey =
   | "gradient"
   | "lateralG"
   | "duration"
+  | "sector"
   | "direction"
   | "drsApproach";
 
@@ -106,11 +107,21 @@ export const ATTRIBUTES: AttributeDef[] = [
     closeWithin: 1,    format: (v) => `${v}g`,
   },
   {
+    key: "sector",
+    label: "Track sector",
+    short: "Sector",
+    type: "categorical",
+    enabled: true,
+    format: (v) => `S${v}`,
+  },
+  // Direction lives on the telemetry chart now (top-right of the trace), not in
+  // the comparison grid — disabled here, but kept for re-enabling / the reveal.
+  {
     key: "direction",
     label: "Corner direction",
     short: "Dir",
     type: "categorical",
-    enabled: true,
+    enabled: false,
     format: (v) => (v === "L" ? "LEFT" : "RIGHT"),
   },
   {

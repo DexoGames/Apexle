@@ -6,8 +6,24 @@
 
 .legend {
     display: flex;
+    align-items: center;
     gap: 16px;
     margin-bottom: 8px;
+}
+
+.dir {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--orange);
+    border: 1px solid var(--orange);
+    padding: 3px 9px;
+    white-space: nowrap;
 }
 
 .chip {
