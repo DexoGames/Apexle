@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" fill="#0d0d0d"/>
+  <!-- a braking trace: flat on approach, dips through the apex, recovers on exit -->
+  <path d="M5 16 H22 C30 16 30 48 32 48 C34 48 34 20 59 20"
+        fill="none" stroke="#ff5a36" stroke-width="7"
+        stroke-linecap="square" stroke-linejoin="miter"/>
+  <!-- apex marker (minimum speed) -->
+  <circle cx="32" cy="48" r="4.5" fill="#2fe089"/>
+</svg>

@@ -1,0 +1,28 @@
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+}
+
+.default {
+    background: var(--orange);
+    color: var(--orange-ink);
+}
+
+.award {
+    background: var(--gold);
+    color: var(--gold-ink);
+}
+
+.muted {
+    background: var(--black-soft-2);
+    color: var(--bone-dim);
+    border: 1px solid var(--line-on-black);
+}

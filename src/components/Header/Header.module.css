@@ -1,0 +1,105 @@
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 0 20px;
+    background: var(--black);
+    color: var(--bone);
+    border-bottom: 2px solid var(--orange);
+}
+
+.left {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+}
+
+.status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--bone-dim);
+}
+
+.dot {
+    width: 7px;
+    height: 7px;
+    background: var(--fb-exact);
+}
+
+.brand {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    letter-spacing: 0.02em;
+    color: var(--bone);
+    text-transform: uppercase;
+}
+
+.brandAccent {
+    color: var(--orange);
+}
+
+.right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.iconBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    background: transparent;
+    color: var(--bone);
+    border: 2px solid var(--line-strong);
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.iconBtn:hover {
+    color: var(--orange);
+    border-color: var(--orange);
+}
+
+.homeLink {
+    margin-left: 4px;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--bone-dim);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color 0.15s ease;
+}
+
+.homeLink:hover {
+    color: var(--orange);
+}
+
+@media (max-width: 560px) {
+    .header {
+        padding: 0 12px;
+        gap: 8px;
+    }
+
+    .status {
+        display: none;
+    }
+
+    .homeLink {
+        display: none;
+    }
+}
