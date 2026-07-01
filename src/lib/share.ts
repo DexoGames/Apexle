@@ -22,7 +22,7 @@ export function buildShare(
       const track = cfg.showCircuitHint
         ? EMOJI[r.sameCircuit ? "exact" : r.sameRegion ? "close" : "far"]
         : "";
-      return track + r.cells.map((c) => EMOJI[c.status]).join("");
+      return track + "|" + r.cells.map((c) => EMOJI[c.status]).join("");
     })
     .join("\n");
   return `Apexle #${puzzleNumber} ${cfg.label} ${score}\n${grid}\nhttps://apexle.dexo.games`;
