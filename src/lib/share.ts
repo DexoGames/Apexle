@@ -18,7 +18,12 @@ export function buildShare(
   const cfg = DIFFICULTY_CONFIG[difficulty];
   const score = won ? `${results.length}/${cfg.guesses}` : `X/${cfg.guesses}`;
   const grid = results
-    .map((r) => r.cells.map((c) => EMOJI[c.status]).join(""))
+    .map((r) => {
+      const track = cfg.showCircuitHint
+        ? EMOJI[r.sameCircuit ? "exact" : r.sameRegion ? "close" : "far"]
+        : "";
+      return track + r.cells.map((c) => EMOJI[c.status]).join("");
+    })
     .join("\n");
   return `Apexle #${puzzleNumber} ${cfg.label} ${score}\n${grid}\nhttps://apexle.dexo.games`;
 }

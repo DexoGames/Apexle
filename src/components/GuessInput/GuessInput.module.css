@@ -18,6 +18,14 @@
     color: var(--bone-dim);
 }
 
+/* iOS Safari auto-zooms on focus for inputs under 16px — keep it at 16px here
+   so typing a guess doesn't trigger that zoom. */
+@media (max-width: 560px) {
+    .input {
+        font-size: 16px;
+    }
+}
+
 .input:disabled {
     border-color: var(--line-strong);
     color: var(--bone-dim);

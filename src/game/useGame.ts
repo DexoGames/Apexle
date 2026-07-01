@@ -39,7 +39,7 @@ export interface Game {
 
 export function useGame(): Game {
   const puzzle = useMemo(() => puzzleNumber(), []);
-  const initialDifficulty = useMemo<Difficulty>(() => load<Difficulty>(PREF_KEY, "pro"), []);
+  const initialDifficulty: Difficulty = "rookie";
 
   const [difficulty, setDifficultyState] = useState<Difficulty>(initialDifficulty);
   const [mode, setMode] = useState<Mode>("daily");

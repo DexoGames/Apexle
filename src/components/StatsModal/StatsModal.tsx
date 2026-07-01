@@ -56,7 +56,7 @@ export function StatsModal({ difficulty, onClose, result }: Props) {
           className={cx(styles.result, result.status === "won" ? styles.won : styles.lost)}
         >
           <div className={styles.headline}>
-            {result.status === "won" ? "Nailed it" : "Out of laps"}
+            {result.status === "won" ? "Nailed it!" : "Out of laps"}
           </div>
           <p className={styles.reveal}>
             It was <b>{circuitShort(result.answer.circuitId)}</b>,{" "}

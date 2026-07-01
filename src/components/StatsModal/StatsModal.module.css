@@ -63,7 +63,7 @@
 }
 
 .scoreBarLost {
-    background: var(--orange);
+    background: var(--fb-close);
 }
 
 .row {
