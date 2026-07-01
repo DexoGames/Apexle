@@ -7,6 +7,7 @@
 
 .grid {
     display: grid;
+    grid-template-columns: minmax(120px, 1.4fr) repeat(var(--attr-cols), minmax(60px, 1fr));
     gap: 3px;
     min-width: 540px;
 }
@@ -41,6 +42,11 @@
 /* hint active + same circuit */
 .sameCircuit {
     border-left-color: var(--fb-exact);
+}
+
+/* hint active + same region of the world (close-ish) */
+.sameRegion {
+    border-left-color: var(--fb-close);
 }
 
 /* hint active + different circuit */
@@ -126,11 +132,61 @@
 @media (max-width: 560px) {
     .scroll {
         margin-top: 6px;
+        /* everything now fits the viewport — no sideways scrolling */
+        overflow-x: hidden;
+    }
+
+    /* let the columns shrink to fill the screen instead of overflowing */
+    .grid {
+        min-width: 0;
+        gap: 2px;
+        grid-template-columns: minmax(80px, 1.25fr) repeat(var(--attr-cols), minmax(0, 1fr));
+    }
+
+    .head {
+        padding: 5px 1px;
+        font-size: 0.48rem;
+        letter-spacing: 0.02em;
+    }
+
+    .cornerHead {
+        padding-left: 6px;
+    }
+
+    .cornerCell {
+        padding: 3px 5px;
+    }
+
+    .cName {
+        font-size: 0.5rem;
+        line-height: 1.1;
+    }
+
+    .cTurn {
+        font-size: 0.54rem;
+        line-height: 1.1;
+    }
+
+    .cCode {
+        margin-left: 3px;
+        font-size: 0.46rem;
+    }
+
+    .cell {
+        padding: 2px 1px;
+    }
+
+    .val {
+        font-size: 0.52rem;
+    }
+
+    .arrow {
+        font-size: 0.48rem;
     }
 
     .cornerCell,
     .cell,
     .empty {
-        min-height: 28px;
+        min-height: 26px;
     }
 }

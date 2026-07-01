@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, type CSSProperties } from "react";
 import { enabledAttributes } from "../../game/attributes";
 import type { Arrow, GuessResult } from "../../lib/compare";
 import { circuitShort, cornerPrimary, cornerCode } from "../../game/data";
@@ -22,12 +22,14 @@ const ARROW: Record<Exclude<Arrow, null>, string> = { up: "▲", down: "▼" };
  */
 export function ComparisonGrid({ results, maxGuesses, showCircuitHint, bestRowIndex }: Props) {
   const attrs = enabledAttributes();
-  const cols = `minmax(120px, 1.4fr) repeat(${attrs.length}, minmax(60px, 1fr))`;
   const emptyRows = Math.max(0, maxGuesses - results.length);
 
   return (
     <div className={styles.scroll}>
-      <div className={styles.grid} style={{ gridTemplateColumns: cols }}>
+      <div
+        className={styles.grid}
+        style={{ "--attr-cols": attrs.length } as CSSProperties}
+      >
         {/* header */}
         <div className={cx(styles.head, styles.cornerHead)}>Corner</div>
         {attrs.map((a) => (
@@ -46,6 +48,8 @@ export function ComparisonGrid({ results, maxGuesses, showCircuitHint, bestRowIn
                   ? styles.hintOff
                   : r.sameCircuit
                   ? styles.sameCircuit
+                  : r.sameRegion
+                  ? styles.sameRegion
                   : styles.diffCircuit,
                 bestRowIndex === ri && styles.bestRow,
               )}

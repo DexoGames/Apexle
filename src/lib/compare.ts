@@ -1,6 +1,7 @@
 import type { Corner, Difficulty } from "../types/corner";
 import { DIFFICULTY_CONFIG } from "../types/corner";
 import { enabledAttributes, type ComparableKey } from "../game/attributes";
+import { circuitRegion } from "../game/data";
 
 export type CellStatus = "exact" | "close" | "far";
 export type Arrow = "up" | "down" | null;
@@ -21,6 +22,8 @@ export interface GuessResult {
   /** satisfies the win condition for this difficulty */
   correct: boolean;
   sameCircuit: boolean;
+  /** guess is on a different circuit but in the same geographic region */
+  sameRegion: boolean;
   cells: Cell[];
   /** number of green (exact) cells in this guess */
   greenCount: number;
@@ -81,8 +84,12 @@ export function compareGuess(
   });
 
   const sameCircuit = guess.circuitId === answer.circuitId;
+  const guessRegion = circuitRegion(guess.circuitId);
+  const answerRegion = circuitRegion(answer.circuitId);
+  const sameRegion =
+    !sameCircuit && guessRegion !== undefined && guessRegion === answerRegion;
   const correct = guess.id === answer.id;
   const greenCount = cells.filter((c) => c.status === "exact").length;
 
-  return { corner: guess, correct, sameCircuit, cells, greenCount };
+  return { corner: guess, correct, sameCircuit, sameRegion, cells, greenCount };
 }

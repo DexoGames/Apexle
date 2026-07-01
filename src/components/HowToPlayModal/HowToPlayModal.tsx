@@ -34,7 +34,9 @@ export function HowToPlayModal({ onClose }: { onClose: () => void }) {
       </div>
 
       <p className={styles.p}>
-        A green bar on the left side of a guess means you're on the right circuit.
+        The bar on the left of each guess shows how close its circuit is:{" "}
+        <b>green</b> is the right circuit, <b>yellow</b> is the right region of the
+        world (e.g. another European track), grey is elsewhere.
       </p>
 
       <h3 className={styles.h}>What gets compared</h3>

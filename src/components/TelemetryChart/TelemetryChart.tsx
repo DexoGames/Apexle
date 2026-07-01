@@ -85,7 +85,7 @@ export function TelemetryChart({ trace, channels, direction, apexD }: Props) {
           </span>
         )}
         <span className={styles.dir} title="Corner direction">
-          {direction === "L" ? "◀ Left Turn" : "Right Turn ▶"}
+          {direction === "L" ? "◀ Left" : "Right ▶"}
         </span>
       </div>
 

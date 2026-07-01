@@ -25,6 +25,83 @@ export function circuitShort(id: string): string {
   return c?.short || c?.name || id;
 }
 
+export function circuitCountry(id: string): string {
+  return circuitMap.get(id)?.country ?? "";
+}
+
+export type Region = "Europe" | "Middle East" | "Asia" | "Americas";
+
+/**
+ * Geographic region per circuit. Powers the "same region" (yellow) proximity
+ * hint on each guess — a nudge toward where in the world the mystery corner is.
+ * Azerbaijan (Baku) is transcontinental; it's grouped with Europe here, matching
+ * how F1 slots it among the European-adjacent rounds. Australia (Albert Park) is
+ * grouped with Asia (Asia-Pacific) rather than standing alone.
+ */
+const CIRCUIT_REGION: Record<string, Region> = {
+  albert_park: "Asia",
+  bahrain: "Middle East",
+  baku: "Europe",
+  catalunya: "Europe",
+  cota: "Americas",
+  hungaroring: "Europe",
+  imola: "Europe",
+  interlagos: "Americas",
+  jeddah: "Middle East",
+  lusail: "Middle East",
+  marina_bay: "Asia",
+  miami: "Americas",
+  monaco: "Europe",
+  montreal: "Americas",
+  monza: "Europe",
+  red_bull_ring: "Europe",
+  rodriguez: "Americas",
+  shanghai: "Asia",
+  silverstone: "Europe",
+  spa: "Europe",
+  suzuka: "Asia",
+  vegas: "Americas",
+  yas_marina: "Middle East",
+  zandvoort: "Europe",
+};
+
+export function circuitRegion(id: string): Region | undefined {
+  return CIRCUIT_REGION[id];
+}
+
+/**
+ * Extra search terms per circuit so players can find a corner by country or a
+ * common nickname (e.g. "britain"/"uk" for Silverstone, "austria" for the Red
+ * Bull Ring). The circuit's own `country` field is already indexed; these cover
+ * aliases and cases where the stored country is a city/region name.
+ */
+const SEARCH_ALIASES: Record<string, string> = {
+  albert_park: "australia melbourne aus",
+  bahrain: "sakhir",
+  baku: "azerbaijan",
+  catalunya: "spain barcelona",
+  cota: "usa america united states texas austin",
+  hungaroring: "hungary budapest",
+  imola: "italy emilia romagna",
+  interlagos: "brazil sao paulo",
+  jeddah: "saudi arabia ksa",
+  lusail: "qatar losail",
+  marina_bay: "singapore",
+  miami: "usa america united states florida",
+  monaco: "monte carlo",
+  montreal: "canada",
+  monza: "italy",
+  red_bull_ring: "austria spielberg",
+  rodriguez: "mexico",
+  shanghai: "china",
+  silverstone: "britain uk england gb",
+  spa: "belgium francorchamps",
+  suzuka: "japan",
+  vegas: "usa america united states nevada",
+  yas_marina: "abu dhabi uae emirates",
+  zandvoort: "holland dutch netherlands",
+};
+
 /** A corner's display label: its name if it has one, else "T<n>". */
 export function cornerPrimary(corner: { name: string | null; number: number }): string {
   return corner.name ?? `T${corner.number}`;
@@ -58,7 +135,9 @@ export const CORNER_OPTIONS: CornerOption[] = CORNERS.map((c) => {
     name: c.name,
     primary: cornerPrimary(c),
     code: cornerCode(c),
-    search: `${circuitName(c.circuitId)} ${short} ${c.name ?? ""} t${c.number}`.toLowerCase(),
+    search: `${circuitName(c.circuitId)} ${short} ${circuitCountry(c.circuitId)} ${
+      SEARCH_ALIASES[c.circuitId] ?? ""
+    } ${c.name ?? ""} t${c.number}`.toLowerCase(),
   };
 }).sort((a, b) =>
   a.circuitShort.localeCompare(b.circuitShort) || a.number - b.number,
