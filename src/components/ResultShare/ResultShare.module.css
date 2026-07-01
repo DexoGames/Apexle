@@ -69,7 +69,7 @@
 }
 
 .scoreBarLost {
-    background: var(--orange);
+    background: var(--fb-close);
 }
 
 .facts {
