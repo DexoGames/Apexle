@@ -40,6 +40,38 @@
     color: var(--orange);
 }
 
+.scoreWrap {
+    margin-bottom: 16px;
+}
+
+.scoreLabel {
+    font-size: 0.64rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--bone-dim);
+    margin-bottom: 6px;
+}
+
+.scoreTrack {
+    height: 8px;
+    background: var(--black-soft-2);
+    border: 1px solid var(--line-strong);
+    width: 100%;
+}
+
+.scoreBar {
+    height: 100%;
+    transition: width 0.6s ease;
+}
+
+.scoreBarWon {
+    background: var(--fb-exact);
+}
+
+.scoreBarLost {
+    background: var(--orange);
+}
+
 .facts {
     display: flex;
     flex-wrap: wrap;

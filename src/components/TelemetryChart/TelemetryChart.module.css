@@ -1,7 +1,15 @@
 .wrap {
-    background: var(--black-soft);
-    border: 2px solid var(--line-strong);
-    padding: 14px 14px 8px;
+    padding: 12px 14px 6px;
+}
+
+@media (max-width: 560px) {
+    .wrap {
+        padding: 8px 12px 4px;
+    }
+
+    .legend {
+        margin-bottom: 4px;
+    }
 }
 
 .legend {
@@ -68,6 +76,13 @@
 .baseline {
     stroke: var(--line-strong);
     stroke-width: 1;
+}
+
+.apexLine {
+    stroke: var(--bone-dim);
+    stroke-width: 1;
+    stroke-dasharray: 3 4;
+    opacity: 0.5;
 }
 
 .speed {

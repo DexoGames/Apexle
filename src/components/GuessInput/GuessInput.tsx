@@ -58,7 +58,7 @@ export function GuessInput({ onGuess, guessedIds, disabled }: Props) {
         className={styles.input}
         value={q}
         disabled={disabled}
-        placeholder={disabled ? "Round over" : "Guess a corner — type a circuit name…"}
+        placeholder={disabled ? "Round over" : "Guess a corner, type a circuit name..."}
         onChange={(e) => {
           setQ(e.target.value);
           setOpen(true);

@@ -9,6 +9,8 @@ interface Props {
   results: GuessResult[];
   maxGuesses: number;
   showCircuitHint: boolean;
+  /** index of the best guess to highlight, shown only after game over */
+  bestRowIndex?: number;
 }
 
 const ARROW: Record<Exclude<Arrow, null>, string> = { up: "▲", down: "▼" };
@@ -18,7 +20,7 @@ const ARROW: Record<Exclude<Arrow, null>, string> = { up: "▲", down: "▼" };
  * grey) and numeric cells carry a ▲/▼ telling you which way the answer lies.
  * Columns are derived from enabledAttributes(), so the registry drives this.
  */
-export function ComparisonGrid({ results, maxGuesses, showCircuitHint }: Props) {
+export function ComparisonGrid({ results, maxGuesses, showCircuitHint, bestRowIndex }: Props) {
   const attrs = enabledAttributes();
   const cols = `minmax(120px, 1.4fr) repeat(${attrs.length}, minmax(60px, 1fr))`;
   const emptyRows = Math.max(0, maxGuesses - results.length);
@@ -40,7 +42,12 @@ export function ComparisonGrid({ results, maxGuesses, showCircuitHint }: Props) 
             <div
               className={cx(
                 styles.cornerCell,
-                showCircuitHint && r.sameCircuit && styles.sameCircuit,
+                !showCircuitHint
+                  ? styles.hintOff
+                  : r.sameCircuit
+                  ? styles.sameCircuit
+                  : styles.diffCircuit,
+                bestRowIndex === ri && styles.bestRow,
               )}
             >
               <span className={styles.cName}>{circuitShort(r.corner.circuitId)}</span>

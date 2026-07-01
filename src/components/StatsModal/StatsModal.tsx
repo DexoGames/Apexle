@@ -16,6 +16,8 @@ export interface ResultInfo {
   results: GuessResult[];
   puzzleNumber: number;
   isDaily: boolean;
+  bestGreens: number;
+  totalAttrs: number;
 }
 
 interface Props {
@@ -54,13 +56,34 @@ export function StatsModal({ difficulty, onClose, result }: Props) {
           className={cx(styles.result, result.status === "won" ? styles.won : styles.lost)}
         >
           <div className={styles.headline}>
-            {result.status === "won" ? "✓ Nailed it" : "✗ Out of laps"}
+            {result.status === "won" ? "Nailed it" : "Out of laps"}
           </div>
           <p className={styles.reveal}>
-            It was <b>{circuitShort(result.answer.circuitId)}</b> —{" "}
+            It was <b>{circuitShort(result.answer.circuitId)}</b>,{" "}
             {result.answer.name ?? `Turn ${result.answer.number}`}
             {result.answer.name ? ` (T${result.answer.number})` : ""}.
           </p>
+          <div className={styles.scoreWrap}>
+            <div className={styles.scoreLabel}>
+              {result.status === "won"
+                ? "All attributes matched"
+                : `Best guess: ${result.bestGreens} / ${result.totalAttrs} attributes`}
+            </div>
+            <div className={styles.scoreTrack}>
+              <div
+                className={cx(
+                  styles.scoreBar,
+                  result.status === "won" ? styles.scoreBarWon : styles.scoreBarLost,
+                )}
+                style={{
+                  width:
+                    result.status === "won"
+                      ? "100%"
+                      : `${Math.round((result.bestGreens / result.totalAttrs) * 100)}%`,
+                }}
+              />
+            </div>
+          </div>
           {result.isDaily && (
             <Button variant="primary" className={styles.shareBtn} onClick={share}>
               {copied ? "Copied!" : "Share result"}
@@ -78,7 +101,7 @@ export function StatsModal({ difficulty, onClose, result }: Props) {
 
       <h3 className={styles.h}>Guess distribution</h3>
       {s.wins === 0 ? (
-        <p className={styles.empty}>No wins logged yet — go get one.</p>
+        <p className={styles.empty}>No wins yet. Go get one.</p>
       ) : (
         <div className={styles.dist}>
           {counts.map((c, i) => (

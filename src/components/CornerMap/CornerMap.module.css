@@ -1,0 +1,62 @@
+.wrap {
+    width: 100%;
+    padding: 12px 14px 6px;
+}
+
+.legend {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 6px;
+}
+
+.cap {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    color: var(--bone-dim);
+}
+
+.svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* stacked full-width on mobile — cap height so it doesn't dominate the page */
+@media (max-width: 560px) {
+    .wrap {
+        padding: 8px 12px 4px;
+    }
+
+    .legend {
+        margin-bottom: 4px;
+    }
+
+    .svg {
+        max-height: 92px;
+    }
+}
+
+.path {
+    fill: none;
+    stroke: var(--orange);
+    stroke-width: 4;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 5px rgba(255, 90, 54, 0.45));
+}
+
+.apex {
+    fill: var(--black-soft);
+    stroke: var(--fb-exact);
+    stroke-width: 3;
+}
+
+.apexLabel {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    fill: var(--fb-exact);
+}

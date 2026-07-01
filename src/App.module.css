@@ -1,15 +1,43 @@
 .main {
     max-width: var(--maxw);
     margin: 0 auto;
-    padding: 26px 16px 8px;
+    padding: 10px 16px 8px;
 }
 
 .titleRow {
+    margin-bottom: 8px;
+}
+
+/* Combined puzzle box: telemetry (+ corner map hint) share one border. */
+.puzzle {
+    background: var(--black-soft);
+    border: 2px solid var(--line-strong);
     display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 14px;
+    flex-direction: column;
+}
+
+.telemetryCell {
+    min-width: 0;
+}
+
+.mapCell {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+}
+
+/* rookie: telemetry and map side by side to save vertical space */
+.puzzleSplit {
+    flex-direction: row;
+}
+
+.puzzleSplit .telemetryCell {
+    flex: 1.7 1 0;
+}
+
+.puzzleSplit .mapCell {
+    flex: 1 1 0;
+    border-left: 2px solid var(--line-strong);
 }
 
 .kicker {
@@ -21,16 +49,23 @@
 
 .title {
     font-family: var(--font-display);
-    font-size: 1.7rem;
+    font-size: 1.45rem;
     line-height: 1;
     text-transform: uppercase;
-    margin-top: 4px;
+    margin-top: 3px;
 }
 
 .modeRow {
     display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.modeGroup {
+    display: flex;
     gap: 0;
-    margin-bottom: 18px;
 }
 
 .modeBtn {
@@ -61,14 +96,14 @@
 }
 
 .guessArea {
-    margin-top: 16px;
+    margin-top: 8px;
 }
 
 .remaining {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-top: 8px;
+    margin-top: 6px;
     font-size: 0.64rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
@@ -94,12 +129,16 @@
 
 @media (max-width: 560px) {
     .title {
-        font-size: 1.35rem;
+        font-size: 1.3rem;
     }
 
-    .titleRow {
+    /* stack telemetry over the map on narrow screens */
+    .puzzleSplit {
         flex-direction: column;
-        align-items: stretch;
-        gap: 12px;
+    }
+
+    .puzzleSplit .mapCell {
+        border-left: none;
+        border-top: 2px solid var(--line-strong);
     }
 }

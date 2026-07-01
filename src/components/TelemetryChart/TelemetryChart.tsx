@@ -5,26 +5,27 @@ import styles from "./TelemetryChart.module.css";
 interface Props {
   trace: TracePoint[];
   channels: TraceChannel[];
-  /** corner direction — shown as a given (the trace can't reveal it) */
   direction: "L" | "R";
+  /** metres from trace start to the apex — stored in JSON so no re-derivation needed */
+  apexD: number;
 }
 
-// viewBox geometry
+// viewBox geometry (kept short so it sits beside the corner map without scrolling)
 const W = 720;
-const H = 300;
+const H = 240;
 const PAD_L = 16;
 const PAD_R = 16;
-const SPEED_TOP = 42;
-const SPEED_BOT = 196;
-const INP_TOP = 214;
-const INP_BOT = 280;
+const SPEED_TOP = 34;
+const SPEED_BOT = 157;
+const INP_TOP = 171;
+const INP_BOT = 224;
 
 /**
  * The puzzle: an anonymised speed/throttle/brake trace for one corner. No axis
  * numbers, no track shape — just the telemetry signature. Hand-rolled SVG to
  * match the brutalist, dependency-light house style.
  */
-export function TelemetryChart({ trace, channels, direction }: Props) {
+export function TelemetryChart({ trace, channels, direction, apexD }: Props) {
   const geom = useMemo(() => {
     const maxD = trace[trace.length - 1]?.d || 1;
     const speeds = trace.map((p) => p.speed);
@@ -57,8 +58,12 @@ export function TelemetryChart({ trace, channels, direction }: Props) {
     });
     if (start !== null) brakeSpans.push([start, maxD]);
 
-    return { x, ySpeed, speedLine, throttleArea, brakeSpans, maxD };
-  }, [trace]);
+    // Use the stored apexD (metres from trace start) — exact, not re-derived from
+    // the downsampled trace. Clamp to the visible range just in case.
+    const apexX = x(Math.min(apexD, maxD));
+
+    return { x, ySpeed, speedLine, throttleArea, brakeSpans, maxD, apexX };
+  }, [trace, apexD]);
 
   const showThrottle = channels.includes("throttle");
   const showBrake = channels.includes("brake");
@@ -119,6 +124,13 @@ export function TelemetryChart({ trace, channels, direction }: Props) {
         {(showThrottle || showBrake) && (
           <line x1={PAD_L} y1={INP_BOT} x2={W - PAD_R} y2={INP_BOT} className={styles.baseline} />
         )}
+
+        {/* apex marker — thin vertical line at minimum speed */}
+        <line
+          x1={geom.apexX} y1={SPEED_TOP}
+          x2={geom.apexX} y2={INP_BOT}
+          className={styles.apexLine}
+        />
 
         {/* speed trace */}
         <polyline points={geom.speedLine} className={styles.speed} />

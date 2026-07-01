@@ -15,6 +15,9 @@ interface Props {
   puzzleNumber: number;
   isDaily: boolean;
   onPractice: () => void;
+  /** best green count and total, for the score bar */
+  bestGreens: number;
+  totalAttrs: number;
 }
 
 export function ResultShare({
@@ -25,9 +28,12 @@ export function ResultShare({
   puzzleNumber,
   isDaily,
   onPractice,
+  bestGreens,
+  totalAttrs,
 }: Props) {
   const [copied, setCopied] = useState(false);
   const won = status === "won";
+  const pct = totalAttrs > 0 ? Math.round((bestGreens / totalAttrs) * 100) : 0;
 
   const share = async () => {
     const text = buildShare(results, difficulty, puzzleNumber, won);
@@ -42,10 +48,26 @@ export function ResultShare({
     <div className={cx(styles.box, won ? styles.won : styles.lost)}>
       <div className={styles.headline}>{won ? "Nailed it!" : "Out of laps"}</div>
       <p className={styles.reveal}>
-        It was <b>{circuitShort(answer.circuitId)}</b> —{" "}
+        It was <b>{circuitShort(answer.circuitId)}</b>,{" "}
         {answer.name ?? `Turn ${answer.number}`}
         {answer.name ? ` (T${answer.number})` : ""}.
       </p>
+
+      {/* score bar */}
+      <div className={styles.scoreWrap}>
+        <div className={styles.scoreLabel}>
+          {won
+            ? "All attributes matched"
+            : `Best guess: ${bestGreens} / ${totalAttrs} attributes`}
+        </div>
+        <div className={styles.scoreTrack}>
+          <div
+            className={cx(styles.scoreBar, won ? styles.scoreBarWon : styles.scoreBarLost)}
+            style={{ width: won ? "100%" : `${pct}%` }}
+          />
+        </div>
+      </div>
+
       <div className={styles.facts}>
         <span>{answer.minSpeed} km/h min</span>
         <span>{answer.brakingDistance} m braking</span>
@@ -66,7 +88,7 @@ export function ResultShare({
         </Button>
       </div>
       {!isDaily && (
-        <p className={styles.practiceNote}>Practice round — not counted in your streak.</p>
+        <p className={styles.practiceNote}>Practice round, not counted in your streak.</p>
       )}
     </div>
   );

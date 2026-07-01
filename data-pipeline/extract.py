@@ -191,6 +191,7 @@ WIN_AFTER = 140.0    # metres after the apex
 RADIUS_DD = 18.0     # metres each side of apex for the 3-point radius (lateral G)
 APEX_SEARCH = 90.0   # search radius (m) around the nominal apex for true min speed
 TRACE_POINTS = 80    # downsampled points in the display trace
+SHAPE_POINTS = 64    # downsampled points in the top-down corner shape (rookie mini-map)
 DRS_ON = {10, 12, 14}  # FastF1 DRS channel codes that mean "open"
 # FastF1 position X/Y/Z are in 1/10 m. Convert to metres for geometry.
 POS_TO_M = 0.1
@@ -216,6 +217,8 @@ class Corner:
     lateralG: float
     drsApproach: bool
     duration: float
+    apexD: float          # metres from trace start to the apex (min-speed point)
+    shape: list[dict]     # top-down x/y path (metres, centred on the apex) for the rookie mini-map
     notable: bool = False  # a "well-known" corner — weighted up in the daily pick
 
 
@@ -345,7 +348,21 @@ def _lateral_g(x: np.ndarray, y: np.ndarray, d: np.ndarray, apex_d: float,
 def extract_corner(circuit_id: str, cid_num: int, apex_d: float, tel: pd.DataFrame,
                    lap_len: float, sec: tuple[float, float]) -> Corner | None:
     dist = tel["Distance"].to_numpy()
-    lo, hi = apex_d - WIN_BEFORE, apex_d + WIN_AFTER
+
+    # --- Pass 1: wide search window just to locate the true apex (min-speed point) ---
+    s_lo, s_hi = apex_d - WIN_BEFORE - APEX_SEARCH, apex_d + WIN_AFTER + APEX_SEARCH
+    s_mask = (dist >= s_lo) & (dist <= s_hi)
+    if s_mask.sum() < 10:
+        return None
+    s_d = tel.loc[s_mask, "Distance"].to_numpy()
+    s_speed = tel.loc[s_mask, "Speed"].to_numpy().astype(float)
+    near = np.abs(s_d - apex_d) <= APEX_SEARCH
+    if near.sum() < 3:
+        near = np.ones_like(s_d, dtype=bool)
+    apex_dist = s_d[np.where(near)[0][np.argmin(s_speed[near])]]
+
+    # --- Pass 2: display window centred on the TRUE apex so it's always ~67% in ---
+    lo, hi = apex_dist - WIN_BEFORE, apex_dist + WIN_AFTER
     mask = (dist >= lo) & (dist <= hi)
     if mask.sum() < 10:
         return None
@@ -363,12 +380,8 @@ def extract_corner(circuit_id: str, cid_num: int, apex_d: float, tel: pd.DataFra
     z = seg["Z"].to_numpy().astype(float) * POS_TO_M
     t = (seg["Time"] - seg["Time"].iloc[0]).dt.total_seconds().to_numpy()
 
-    # --- true apex = minimum speed near the nominal apex distance ---
-    near = np.abs(d - apex_d) <= APEX_SEARCH
-    if near.sum() < 3:
-        near = np.ones_like(d, dtype=bool)
-    apex_idx_local = np.where(near)[0][np.argmin(speed[near])]
-    apex_dist = d[apex_idx_local]
+    # apex_dist is already the true minimum-speed point; find its index in the new window
+    apex_idx_local = _nearest(d, apex_dist)
 
     min_speed = float(speed[apex_idx_local])
     approach = d <= apex_dist
@@ -402,6 +415,9 @@ def extract_corner(circuit_id: str, cid_num: int, apex_d: float, tel: pd.DataFra
 
     # --- anonymised display trace (distance normalised to 0) ---
     d0 = d - d[0]
+    # apex position within the normalised trace (stored so the frontend can use it
+    # directly rather than re-deriving it from the downsampled min-speed point)
+    apex_d_in_trace = float(apex_dist - d[0])
     grid = np.linspace(0, d0[-1], TRACE_POINTS)
     trace = [
         {
@@ -411,6 +427,20 @@ def extract_corner(circuit_id: str, cid_num: int, apex_d: float, tel: pd.DataFra
             "brake": 1 if np.interp(gd, d0, brake) >= 0.5 else 0,
         }
         for gd in grid
+    ]
+
+    # --- top-down corner shape: the real X/Y racing line, centred on the apex ---
+    # Metres, so the frontend can plot it with an equal-aspect fit (accurate shape).
+    # This is the rookie difficulty's "zoomed-in image of the corner".
+    sx = x - x[apex_idx_local]
+    sy = y - y[apex_idx_local]
+    shape_grid = np.linspace(0, d0[-1], SHAPE_POINTS)
+    shape = [
+        {
+            "x": round(float(np.interp(gd, d0, sx)), 1),
+            "y": round(float(np.interp(gd, d0, sy)), 1),
+        }
+        for gd in shape_grid
     ]
 
     return Corner(
@@ -429,6 +459,8 @@ def extract_corner(circuit_id: str, cid_num: int, apex_d: float, tel: pd.DataFra
         sector=sector,
         lateralG=round(lateral_g, 1),
         drsApproach=drs_approach,
+        apexD=round(apex_d_in_trace, 1),
+        shape=shape,
         duration=round(duration, 1),
     )
 

@@ -1,13 +1,13 @@
 .scroll {
     overflow-x: auto;
-    margin-top: 18px;
+    margin-top: 10px;
     /* faint edge so it's clear the grid scrolls horizontally on small screens */
     -webkit-overflow-scrolling: touch;
 }
 
 .grid {
     display: grid;
-    gap: 4px;
+    gap: 3px;
     min-width: 540px;
 }
 
@@ -31,14 +31,32 @@
     flex-direction: column;
     justify-content: center;
     gap: 2px;
-    padding: 6px 8px;
-    min-height: 52px;
+    padding: 5px 8px;
+    min-height: 38px;
     background: var(--black-soft-2);
     border-left: 3px solid transparent;
+    position: relative;
 }
 
+/* hint active + same circuit */
 .sameCircuit {
     border-left-color: var(--fb-exact);
+}
+
+/* hint active + different circuit */
+.diffCircuit {
+    border-left-color: var(--fb-far);
+}
+
+/* hint disabled in this difficulty — dashed so it reads as "not applicable" */
+.hintOff {
+    border-left: 3px dashed var(--line-strong);
+}
+
+/* highlight the best guess row on game over */
+.bestRow {
+    outline: 1px solid var(--orange);
+    outline-offset: -1px;
 }
 
 .cName {
@@ -68,7 +86,7 @@
     align-items: center;
     justify-content: center;
     gap: 1px;
-    min-height: 52px;
+    min-height: 38px;
     padding: 4px 2px;
     text-align: center;
 }
@@ -102,5 +120,17 @@
 .empty {
     background: transparent;
     border: 1px dashed var(--line-on-black);
-    min-height: 52px;
+    min-height: 38px;
+}
+
+@media (max-width: 560px) {
+    .scroll {
+        margin-top: 6px;
+    }
+
+    .cornerCell,
+    .cell,
+    .empty {
+        min-height: 28px;
+    }
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { DIFFICULTY_CONFIG } from "./types/corner";
 import { useGame } from "./game/useGame";
+import { bestScore } from "./lib/compare";
 import { HAS_DATA } from "./game/data";
 import { load, save } from "./lib/storage";
 import { cx } from "./lib/cx";
@@ -8,6 +9,7 @@ import { cx } from "./lib/cx";
 import { Header } from "./components/Header/Header";
 import { Footer } from "./components/Footer/Footer";
 import { TelemetryChart } from "./components/TelemetryChart/TelemetryChart";
+import { CornerMap } from "./components/CornerMap/CornerMap";
 import { GuessInput } from "./components/GuessInput/GuessInput";
 import { ComparisonGrid } from "./components/ComparisonGrid/ComparisonGrid";
 import { DifficultyToggle } from "./components/DifficultyToggle/DifficultyToggle";
@@ -20,6 +22,15 @@ import styles from "./App.module.css";
 export function App() {
   const game = useGame();
   const cfg = DIFFICULTY_CONFIG[game.difficulty];
+
+  const score = bestScore(game.results);
+  const bestRowIndex =
+    game.status !== "playing" && !game.results.some((r) => r.correct)
+      ? game.results.reduce(
+          (best, r, i) => (r.greenCount > game.results[best].greenCount ? i : best),
+          0,
+        )
+      : undefined;
 
   const [showStats, setShowStats] = useState(false);
   const [showHowTo, setShowHowTo] = useState(() => !load("seen:howto", false));
@@ -52,6 +63,8 @@ export function App() {
   }
 
   const playing = game.status === "playing";
+  const showMap =
+    cfg.showCornerMap && !!game.answer.shape && game.answer.shape.length > 1;
 
   return (
     <>
@@ -59,35 +72,45 @@ export function App() {
 
       <main className={styles.main}>
         <div className={styles.titleRow}>
-          <div>
-            <div className={styles.kicker}>
-              {game.isDaily ? `Daily · #${game.puzzleNumber}` : "Practice"}
-            </div>
-            <h1 className={styles.title}>Guess the corner</h1>
+          <div className={styles.kicker}>
+            {game.isDaily ? `Daily · #${game.puzzleNumber}` : "Practice"}
+          </div>
+          <h1 className={styles.title}>Guess the corner</h1>
+        </div>
+
+        <div className={styles.modeRow}>
+          <div className={styles.modeGroup}>
+            <button
+              className={cx(styles.modeBtn, game.isDaily && styles.modeActive)}
+              onClick={game.startDaily}
+            >
+              Daily
+            </button>
+            <button
+              className={cx(styles.modeBtn, !game.isDaily && styles.modeActive)}
+              onClick={game.startPractice}
+            >
+              Practice
+            </button>
           </div>
           <DifficultyToggle value={game.difficulty} onChange={game.setDifficulty} />
         </div>
 
-        <div className={styles.modeRow}>
-          <button
-            className={cx(styles.modeBtn, game.isDaily && styles.modeActive)}
-            onClick={game.startDaily}
-          >
-            Daily
-          </button>
-          <button
-            className={cx(styles.modeBtn, !game.isDaily && styles.modeActive)}
-            onClick={game.startPractice}
-          >
-            Practice
-          </button>
+        <div className={cx(styles.puzzle, showMap && styles.puzzleSplit)}>
+          <div className={styles.telemetryCell}>
+            <TelemetryChart
+              trace={game.answer.trace}
+              channels={cfg.channels}
+              direction={game.answer.direction}
+              apexD={game.answer.apexD}
+            />
+          </div>
+          {showMap && (
+            <div className={styles.mapCell}>
+              <CornerMap shape={game.answer.shape!} />
+            </div>
+          )}
         </div>
-
-        <TelemetryChart
-          trace={game.answer.trace}
-          channels={cfg.channels}
-          direction={game.answer.direction}
-        />
 
         <div className={styles.guessArea}>
           <GuessInput
@@ -107,6 +130,7 @@ export function App() {
             results={game.results}
             maxGuesses={game.maxGuesses}
             showCircuitHint={cfg.showCircuitHint}
+            bestRowIndex={bestRowIndex}
           />
         )}
 
@@ -119,6 +143,8 @@ export function App() {
             puzzleNumber={game.puzzleNumber}
             isDaily={game.isDaily}
             onPractice={game.startPractice}
+            bestGreens={score.greens}
+            totalAttrs={score.total}
           />
         )}
       </main>
@@ -138,6 +164,8 @@ export function App() {
                   results: game.results,
                   puzzleNumber: game.puzzleNumber,
                   isDaily: game.isDaily,
+                  bestGreens: score.greens,
+                  totalAttrs: score.total,
                 }
               : undefined
           }

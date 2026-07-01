@@ -22,6 +22,18 @@ export interface GuessResult {
   correct: boolean;
   sameCircuit: boolean;
   cells: Cell[];
+  /** number of green (exact) cells in this guess */
+  greenCount: number;
+}
+
+/**
+ * Best score across all guesses: highest greenCount, and its fraction of
+ * total enabled attributes. Used for the end-screen scoring even on a loss.
+ */
+export function bestScore(results: GuessResult[]): { greens: number; total: number; pct: number } {
+  const total = results[0]?.cells.length ?? 0;
+  const greens = results.reduce((best, r) => Math.max(best, r.greenCount), 0);
+  return { greens, total, pct: total > 0 ? greens / total : 0 };
 }
 
 /** Score one guessed corner against the hidden answer, per the enabled attributes. */
@@ -69,8 +81,8 @@ export function compareGuess(
   });
 
   const sameCircuit = guess.circuitId === answer.circuitId;
-  // Win only on the exact corner, in every difficulty.
   const correct = guess.id === answer.id;
+  const greenCount = cells.filter((c) => c.status === "exact").length;
 
-  return { corner: guess, correct, sameCircuit, cells };
+  return { corner: guess, correct, sameCircuit, cells, greenCount };
 }

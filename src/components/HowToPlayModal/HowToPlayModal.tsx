@@ -7,14 +7,15 @@ export function HowToPlayModal({ onClose }: { onClose: () => void }) {
   return (
     <Modal title="How to play" onClose={onClose}>
       <p className={styles.lead}>
-        You're shown the anonymised telemetry for one Formula 1 corner — the speed
-        trace, and (depending on difficulty) the throttle and braking. No track map,
-        no labels. Work out which corner it is.
+        You're given the telemetry for a single corner somewhere on the F1 calendar.
+        The trace is stripped of all context — no circuit name, no labels, nothing
+        that names it outright. Just the data (plus, on Rookie, the corner's bare
+        shape). Figure out which corner it is.
       </p>
 
       <p className={styles.p}>
-        Guess any corner. Each guess is scored against the hidden answer across its
-        telemetry attributes:
+        Pick a corner from the search box. Each guess gets scored against the hidden
+        answer across its telemetry attributes:
       </p>
 
       <div className={styles.legend}>
@@ -32,9 +33,11 @@ export function HowToPlayModal({ onClose }: { onClose: () => void }) {
         </span>
       </div>
 
-      <p className={styles.p}>A green left-edge on a guess means it's the right circuit.</p>
+      <p className={styles.p}>
+        A green bar on the left side of a guess means you're on the right circuit.
+      </p>
 
-      <h3 className={styles.h}>Attributes compared</h3>
+      <h3 className={styles.h}>What gets compared</h3>
       <ul className={styles.attrs}>
         {enabledAttributes().map((a) => (
           <li key={a.key}>
@@ -53,8 +56,8 @@ export function HowToPlayModal({ onClose }: { onClose: () => void }) {
       </ul>
 
       <p className={styles.note}>
-        One daily puzzle per difficulty, the same for everyone. Practice mode is
-        unlimited and doesn't affect your streak.
+        One daily puzzle per difficulty, and everyone gets the same one. Practice
+        mode is unlimited and does not count toward your streak.
       </p>
     </Modal>
   );

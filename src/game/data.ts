@@ -67,10 +67,10 @@ export const CORNER_OPTIONS: CornerOption[] = CORNERS.map((c) => {
 export const HAS_DATA = CORNERS.length > 0;
 
 // --- daily selection --------------------------------------------------------
-// A fixed, deterministic 500-day sequence per difficulty. ~75% of days draw from
-// the "well-known" (notable) corners, the rest from the others. Everyone sees the
-// same corner each day (no server), and the whole pattern repeats every 500 days.
-const DAILY_CYCLE = 500;
+// A fixed, deterministic 365-day sequence per difficulty (repeats every year).
+// ~75% of days draw from the "well-known" (notable) corners, the rest from the
+// others. Everyone sees the same corner each day with no server needed.
+const DAILY_CYCLE = 365;
 const NOTABLE_BIAS = 0.75;
 
 function shuffle<T>(arr: T[], rng: () => number): T[] {
@@ -82,6 +82,11 @@ function shuffle<T>(arr: T[], rng: () => number): T[] {
   return a;
 }
 
+// Flat kinks with no braking and negligible angle change are unrecognisable from
+// telemetry alone — exclude them from the answer pool unless they're notable
+// (e.g. Eau Rouge is notable and stays; a random Jeddah kink doesn't).
+const isBoringKink = (c: Corner) => c.brakingDistance === 0 && c.cornerAngle < 20;
+
 const sequences = new Map<Difficulty, Corner[]>();
 
 function dailySequence(difficulty: Difficulty): Corner[] {
@@ -90,7 +95,7 @@ function dailySequence(difficulty: Difficulty): Corner[] {
 
   const rng = seededRandom(`apexle-daily-v1|${difficulty}`);
   const notable = shuffle(CORNERS.filter((c) => c.notable), rng);
-  const others = shuffle(CORNERS.filter((c) => !c.notable), rng);
+  const others = shuffle(CORNERS.filter((c) => !c.notable && !isBoringKink(c)), rng);
 
   const seq: Corner[] = [];
   let ni = 0;
