@@ -3,6 +3,7 @@
     --orange: #ff5a36;
     --orange-deep: #cf4a25;
     --orange-ink: #2a0f06; /* text on orange */
+    --orange-rgb: 255, 90, 54; /* same colour as --orange, as r, g, b for rgba() */
 
     --black: #0d0d0d;
     --black-soft: #171717; /* raised surfaces on black */
@@ -42,6 +43,14 @@
     --radius: 0px; /* everything is square */
 
     --maxw: 760px; /* game board column width */
+}
+
+/* --- pro difficulty: swap the accent to a racing-green theme, UI unchanged --- */
+:root[data-difficulty="pro"] {
+    --orange: #0f7a4c;
+    --orange-deep: #0b5c39;
+    --orange-ink: #eafbf1;
+    --orange-rgb: 15, 122, 76;
 }
 
 * {

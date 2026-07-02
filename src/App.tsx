@@ -35,6 +35,11 @@ export function App() {
   const [showStats, setShowStats] = useState(false);
   const [showHowTo, setShowHowTo] = useState(() => !load("seen:howto", false));
 
+  // drive the difficulty-tinted accent colour via a root attribute (see globals.css)
+  useEffect(() => {
+    document.documentElement.dataset.difficulty = game.difficulty;
+  }, [game.difficulty]);
+
   const closeHowTo = () => {
     setShowHowTo(false);
     save("seen:howto", true);

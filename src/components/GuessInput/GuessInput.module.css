@@ -43,6 +43,32 @@
     border-top: none;
     max-height: 320px;
     overflow-y: auto;
+    overscroll-behavior: contain;
+
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-strong) var(--black-soft);
+}
+
+.list::-webkit-scrollbar {
+    width: 10px;
+}
+
+.list::-webkit-scrollbar-button {
+    display: none;
+}
+
+.list::-webkit-scrollbar-track {
+    background: var(--black-soft);
+}
+
+.list::-webkit-scrollbar-thumb {
+    background: var(--line-strong);
+    border: 2px solid var(--black-soft);
+    border-radius: 0;
+}
+
+.list::-webkit-scrollbar-thumb:hover {
+    background: var(--orange);
 }
 
 .opt {
@@ -60,7 +86,7 @@
 }
 
 .optHi {
-    background: rgba(255, 90, 54, 0.16);
+    background: rgba(var(--orange-rgb), 0.16);
 }
 
 .optUsed {

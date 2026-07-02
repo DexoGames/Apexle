@@ -102,8 +102,8 @@ export type TraceChannel = "speed" | "throttle" | "brake";
 export const DIFFICULTY_CONFIG: Record<Difficulty, DifficultyConfig> = {
   rookie: {
     label: "Rookie",
-    blurb: "Corner map + full telemetry, forgiving matches, 5 guesses.",
-    guesses: 5,
+    blurb: "Corner map + full telemetry, forgiving matches, 6 guesses.",
+    guesses: 6,
     channels: ["speed", "throttle", "brake"],
     showCircuitHint: true,
     showCornerMap: true,
@@ -111,8 +111,8 @@ export const DIFFICULTY_CONFIG: Record<Difficulty, DifficultyConfig> = {
   },
   pro: {
     label: "Pro",
-    blurb: "Full telemetry shown, 5 guesses.",
-    guesses: 5,
+    blurb: "Full telemetry shown, 6 guesses.",
+    guesses: 6,
     channels: ["speed", "throttle", "brake"],
     showCircuitHint: true,
     showCornerMap: false,

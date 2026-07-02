@@ -9,7 +9,7 @@ interface Props {
   disabled?: boolean;
 }
 
-const MAX_RESULTS = 8;
+const MAX_RESULTS = 30;
 
 export function GuessInput({ onGuess, guessedIds, disabled }: Props) {
   const [q, setQ] = useState("");
@@ -58,7 +58,7 @@ export function GuessInput({ onGuess, guessedIds, disabled }: Props) {
         className={styles.input}
         value={q}
         disabled={disabled}
-        placeholder={disabled ? "Round over" : "Guess a corner, type a circuit name..."}
+        placeholder={disabled ? "Round over" : "Guess a corner or circuit..."}
         onChange={(e) => {
           setQ(e.target.value);
           setOpen(true);
@@ -68,7 +68,15 @@ export function GuessInput({ onGuess, guessedIds, disabled }: Props) {
         onBlur={() => setTimeout(() => setOpen(false), 120)}
         onKeyDown={onKey}
         aria-label="Guess a corner"
+        name="apexle-guess"
+        type="text"
         autoComplete="off"
+        autoCorrect="off"
+        autoCapitalize="off"
+        spellCheck={false}
+        data-lpignore="true"
+        data-1p-ignore="true"
+        data-bwignore="true"
       />
       {open && matches.length > 0 && (
         <ul className={styles.list}>
