@@ -8,9 +8,7 @@ export function HowToPlayModal({ onClose }: { onClose: () => void }) {
     <Modal title="How to play" onClose={onClose}>
       <p className={styles.lead}>
         You're given the telemetry for a single corner somewhere on the F1 calendar.
-        The trace is stripped of all context — no circuit name, no labels, nothing
-        that names it outright. Just the data (plus, on Rookie, the corner's bare
-        shape). Figure out which corner it is.
+        Figure out which corner it is.
       </p>
 
       <p className={styles.p}>
